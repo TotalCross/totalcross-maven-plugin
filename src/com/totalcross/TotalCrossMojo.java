@@ -55,6 +55,8 @@ public class TotalCrossMojo extends AbstractMojo {
 
     private String sdkVersion;
 
+    private String totalcrossSDKJARPath = null;
+
     public void execute() throws MojoExecutionException, MojoFailureException {
         addDependenciesToClasspath("totalcross-sdk");
         setupArguments();
@@ -70,6 +72,7 @@ public class TotalCrossMojo extends AbstractMojo {
                 try {
                     sdkVersion = artifact.getVersion();
                     final File file = artifact.getFile();
+                    totalcrossSDKJARPath = file.getAbsolutePath();
                     final URI uri = file.toURI();
                     final URL url = uri.toURL();
                     final ClassRealm realm = (ClassRealm) descriptor.getClassRealm();
@@ -84,14 +87,16 @@ public class TotalCrossMojo extends AbstractMojo {
 
     public void setupArguments() throws MojoExecutionException {
         args = new ArrayList<Element>();
-        args.add(element("argument", "-classpath")); // exec -classpath argument
-        args.add(element("classpath")); // auto generate a classpath
+        args.add(element("argument", "-cp")); // exec -classpath argument
+        args.add(element("argument", totalcrossSDKJARPath)); // auto generate a classpath
         args.add(element("argument", "tc.Deploy"));
         args.add(element("argument",
                 "${project.build.directory}/${project.build.finalName}.${project.packaging}"));
 
-        for (int i = 0; i < platforms.length; i++) { // each platform
-            args.add(element("argument", platforms[i]));
+        if(platforms != null) {
+            for (int i = 0; i < platforms.length; i++) { // each platform
+                args.add(element("argument", platforms[i]));
+            }
         }
 
         // Add app name
