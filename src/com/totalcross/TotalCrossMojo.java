@@ -60,8 +60,6 @@ public class TotalCrossMojo extends AbstractMojo {
     public void execute() throws MojoExecutionException, MojoFailureException {
         addDependenciesToClasspath("totalcross-sdk");
         setupArguments();
-        compileProject();
-        retrolambda();
         deploy();
     }
 
@@ -114,49 +112,7 @@ public class TotalCrossMojo extends AbstractMojo {
             args.add(element("argument", certificates));
         }
     }
-
-    public void compileProject() throws MojoExecutionException {
-        Plugin plugin = plugin(
-                groupId("org.apache.maven.plugins"),
-                artifactId("maven-compiler-plugin"),
-                version("3.1")
-        );
-
-
-        executeMojo(
-                plugin,
-                goal("compile"),
-                configuration(
-                        element(name("source"), "1.8"),
-                        element(name("target"), "1.8")
-                ),
-                executionEnvironment(
-                        mavenProject,
-                        mavenSession,
-                        pluginManager
-                )
-        );
-    }
-
-    public void retrolambda() throws MojoExecutionException {
-
-        executeMojo(
-                plugin(
-                        groupId("net.orfjackal.retrolambda"),
-                         artifactId("retrolambda-maven-plugin"),
-                        version("2.5.1")
-                ),
-                goal("process-main"),
-                configuration(
-                ),
-                executionEnvironment(
-                        mavenProject,
-                        mavenSession,
-                        pluginManager
-                )
-        );
-    }
-
+    
     public void deploy() throws MojoExecutionException {
 
         TotalCrossSDKDownloader totalCrossSDKDownloader = new TotalCrossSDKDownloader(sdkVersion);

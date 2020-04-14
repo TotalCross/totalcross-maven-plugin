@@ -7,6 +7,8 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import me.tongfei.progressbar.ProgressBar;
+import net.lingala.zip4j.ZipFile;
+
 import java.io.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -86,52 +88,11 @@ public class TotalCrossSDKDownloader {
 
     public void unzipSDK() {
         try {
-            File zipFile = new File(sdksLocalRepositoryDir + File.separator + "temp.zip");
-            FileInputStream fin = new FileInputStream(zipFile);
+            ZipFile zipFile = new ZipFile(sdksLocalRepositoryDir + File.separator + "temp.zip");
+            zipFile.extractAll(sdksLocalRepositoryDir);
+            new File(sdksLocalRepositoryDir + File.separator + "TotalCross")
+                    .renameTo(new File(sdkDir));
 
-            //create ZipInputStream from FileInputStream object
-            ZipInputStream zin = new ZipInputStream(fin);
-            ZipEntry entry = null;
-            while ((entry = zin.getNextEntry()) != null)
-            {
-                String name = entry.getName();
-                if( entry.isDirectory() )
-                {
-                    File f = new File(sdkDir + File.separator + name);
-                    f.mkdirs();
-                    continue;
-                }
-                /* this part is necessary because file entry can come before
-                 * directory entry where is file located
-                 * i.e.:
-                 *   /foo/foo.txt
-                 *   /foo/
-                 */
-                String outputFileName = name.substring("TotalCross/".length()); // Skip TotalCross
-                String dir = dirpart(outputFileName);
-                if( dir != null ) {
-                    new File(sdkDir + File.separator + dir).mkdirs();
-                }
-
-                OutputStream os = new FileOutputStream(new File(sdkDir + File.separator + outputFileName));
-
-
-                byte[] buffer = new byte[1024];
-                int length;
-
-                //read the entry from zip file and extract it to disk
-                while ((length = zin.read(buffer)) > 0) {
-                    os.write(buffer, 0, length);
-                }
-
-                //close the streams
-                os.close();
-            }
-            //crate OutputStream to extract the entry from zip file
-
-            //close the zip file
-            zin.close();
-            zipFile.deleteOnExit();
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
