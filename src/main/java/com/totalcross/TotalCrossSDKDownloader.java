@@ -6,12 +6,14 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
+
 import me.tongfei.progressbar.ProgressBar;
 import net.lingala.zip4j.ZipFile;
+import org.apache.maven.shared.utils.io.FileUtils;
+
 
 import java.io.*;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
+
 
 public class TotalCrossSDKDownloader {
 
@@ -88,10 +90,19 @@ public class TotalCrossSDKDownloader {
 
     public void unzipSDK() {
         try {
+
             ZipFile zipFile = new ZipFile(sdksLocalRepositoryDir + File.separator + "temp.zip");
             zipFile.extractAll(sdksLocalRepositoryDir);
             new File(sdksLocalRepositoryDir + File.separator + "TotalCross")
                     .renameTo(new File(sdkDir));
+
+            if (System.getProperty("os.name").startsWith("Windows")) {
+                File from = new File(sdksLocalRepositoryDir + File.separator + "TotalCross");
+                File dest = new File(sdkDir);
+                FileUtils.copyDirectoryStructure(from, dest);
+                FileUtils.deleteDirectory(sdksLocalRepositoryDir + File.separator + "TotalCross");
+            }
+            FileUtils.deleteDirectory(sdksLocalRepositoryDir + File.separator + "temp.zip");
 
         } catch (Exception e) {
             e.printStackTrace();
