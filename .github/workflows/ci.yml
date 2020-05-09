@@ -21,5 +21,6 @@ jobs:
     - uses: actions/checkout@v2
     - name: Running tests
       uses: comchangs/action-maven@master
-      args: clean test 
+      with:
+        args: clean test
   
