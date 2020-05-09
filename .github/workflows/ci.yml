@@ -1,0 +1,25 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+on:
+  push:
+    branches: 
+      - master
+      - feature/actions-ci
+  pull_request:
+    branches: 
+      - master 
+      - feature/actions-ci
+
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  test:
+    runs-on: [ubuntu-latest, windows-latest, macos-latest]
+    steps: 
+    - uses: actions/checkout@v2
+    - name: Running tests
+      uses: comchangs/action-maven@master
+      args: clean test 
+  
