@@ -24,6 +24,8 @@ public class TotalCrossSDKDownloader {
 
     public TotalCrossSDKDownloader (String version) {
         this.version = version;
+        sdksLocalRepositoryDir = System.getProperty("user.home")
+                + File.separator +  "TotalCross";
     }
 
     public void init() {
@@ -38,8 +40,6 @@ public class TotalCrossSDKDownloader {
     }
 
     public void configureAndCreateDirs() {
-        sdksLocalRepositoryDir = System.getProperty("user.home")
-                + File.separator +  "TotalCross";
         sdkDir = sdksLocalRepositoryDir + File.separator + version;
         new File(sdksLocalRepositoryDir).mkdir();
         new File(sdkDir).mkdir();
@@ -119,4 +119,31 @@ public class TotalCrossSDKDownloader {
     public String getSdkDir() {
         return sdkDir;
     }
+
+
+    public String getVersion() {
+        return this.version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
+    public void setSdkDir(String sdkDir) {
+        this.sdkDir = sdkDir;
+    }
+
+    public String getSdksLocalRepositoryDir() {
+        return this.sdksLocalRepositoryDir;
+    }
+
+    public void setSdksLocalRepositoryDir(String sdksLocalRepositoryDir) {
+        this.sdksLocalRepositoryDir = sdksLocalRepositoryDir;
+    }
+
+    public String getBaseBucket() {
+        return this.baseBucket;
+    }
+
+
+    
 }

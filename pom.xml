@@ -11,6 +11,13 @@
     <url>http://maven.apache.org</url>
     <packaging>maven-plugin</packaging>
 
+    <properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>${maven.compiler.source}</maven.compiler.target>
+		<junit.jupiter.version>5.6.2</junit.jupiter.version>
+	</properties>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -24,6 +31,14 @@
     </dependencyManagement>
 
     <dependencies>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${junit.jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-plugin-api</artifactId>
@@ -107,6 +122,10 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.22.2</version>
             </plugin>
         </plugins>
     </build>
