@@ -19,9 +19,11 @@ jobs:
     runs-on:  
       - windows-latest
     steps: 
-    - uses: actions/checkout@v2
-    - name: Running tests
-      uses: "LucaFeger/action-maven-cli@master"
-      with:
-        args: clean test
+      - uses: actions/checkout@v2
+      - name:
+        uses: actions/setup-java@v1
+          with:
+            java-version: 1.8
+      - name: Running tests
+        run: clean test
   
