@@ -30,5 +30,12 @@ jobs:
         run: mvn clean test
 
       - name: Package & Deploy
-        run: mvn deploy -DskipTests=true -Dinternal.repo.username=${TC_MVN_REPO_USR} -Dinternal.repo.password=${TC_MVN_REPO_PASS} -s settings.xml
+        runs-on: ubuntu-latest
+        commands:
+          - >-
+            mvn deploy
+            -DskipTests=true
+            -Dinternal.repo.username=${{ secrets.TC_MVN_REPO_USR }}
+            -Dinternal.repo.password=${{ secrets.TC_MVN_REPO_PASS }}
+            -s settings.xml
   
