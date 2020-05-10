@@ -11,13 +11,15 @@ on:
     branches: 
       - master 
       - feature/actions-ci
-
+strategy:
+  matrix:
+    runner: [windows-latest, ubuntu-latest, macos-latest]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   test:
     runs-on:  
-      - windows-latest
+      - ${{ matrix.runner }}
     steps: 
       - uses: actions/checkout@v2
       - name: Set up JDK 1.8
