@@ -38,11 +38,5 @@ jobs:
         with:
           java-version: 1.8
       - name: Package & Deploy
-        run:
-          - >-
-            mvn deploy
-            -DskipTests=true
-            -Dinternal.repo.username=${{ secrets.TC_MVN_REPO_USR }}
-            -Dinternal.repo.password=${{ secrets.TC_MVN_REPO_PASS }}
-            -s settings.xml
+        run: mvn deploy -DskipTests=true -Dinternal.repo.username=${{ secrets.TC_MVN_REPO_USR }} -Dinternal.repo.password=${{ secrets.TC_MVN_REPO_PASS }} -s settings.xml
   
