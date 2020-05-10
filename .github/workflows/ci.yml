@@ -18,8 +18,6 @@ jobs:
     strategy:
       matrix:
         runner: [windows-latest, ubuntu-latest, macos-latest]
-    runs-on:  
-      - ${{ matrix.runner }}
     steps: 
       - uses: actions/checkout@v2
       - name: Set up JDK 1.8
@@ -27,5 +25,10 @@ jobs:
         with:
           java-version: 1.8
       - name: Test
+        runs-on:
+          - ${{ matrix.runner }}
         run: mvn clean test
+
+      - name: Package & Deploy
+        run: mvn deploy -DskipTests=true -Dinternal.repo.username=${TC_MVN_REPO_USR} -Dinternal.repo.password=${TC_MVN_REPO_PASS} -s settings.xml
   
