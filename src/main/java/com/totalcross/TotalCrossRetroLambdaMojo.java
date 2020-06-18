@@ -39,7 +39,7 @@ public class TotalCrossRetroLambdaMojo extends AbstractMojo {
                 plugin(
                         groupId("net.orfjackal.retrolambda"),
                         artifactId("retrolambda-maven-plugin"),
-                        version("2.5.1")
+                        version("2.5.6")
                 ),
                 goal("process-main"),
                 configuration(
