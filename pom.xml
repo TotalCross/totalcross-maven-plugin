@@ -107,13 +107,6 @@
 
     </dependencies>
 
-    <distributionManagement>
-        <repository>
-            <id>internal.repo</id>
-            <name>repo1</name>
-            <url>https://maven.totalcross.com/artifactory/repo1-release</url>
-        </repository>
-    </distributionManagement>
     <build>
         <plugins>
             <plugin>
