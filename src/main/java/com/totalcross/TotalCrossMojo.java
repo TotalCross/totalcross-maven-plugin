@@ -17,10 +17,10 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
-
 @Mojo(name = "package", requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME)
 public class TotalCrossMojo extends AbstractMojo {
 
@@ -55,38 +55,44 @@ public class TotalCrossMojo extends AbstractMojo {
 
     private String sdkVersion;
 
-    private String totalcrossSDKJARPath = null;
+    private String projectClassPath = "";
 
     public void execute() throws MojoExecutionException, MojoFailureException {
-        addDependenciesToClasspath("totalcross-sdk");
+        addDependenciesToClasspath();
+        setupSDKPath();
         setupArguments();
         deploy();
     }
 
-    private void addDependenciesToClasspath(String artifactId) {
-        System.out.println("Number of dependencies: " + mavenProject.getDependencies().size());
+    private void addDependenciesToClasspath() {
+        
         for (Artifact artifact : mavenProject.getDependencyArtifacts()) {
-            if (artifact.getArtifactId().equals(artifactId)) {
-                try {
-                    sdkVersion = artifact.getVersion();
-                    final File file = artifact.getFile();
-                    totalcrossSDKJARPath = file.getAbsolutePath();
-                    final URI uri = file.toURI();
-                    final URL url = uri.toURL();
-                    final ClassRealm realm = (ClassRealm) descriptor.getClassRealm();
-                    realm.addURL(url);
-                }
-                catch (MalformedURLException e) {
-                    throw new RuntimeException(e);
-                }
-            }
+            sdkVersion = artifact.getVersion();
+            final File file = artifact.getFile();
+            projectClassPath += file.getAbsolutePath() + ":";
+        }
+    }
+
+    private void setupSDKPath () {      
+        //Setup environment variable
+        if(totalcrossHome == null) {    // check if SDK path is provided, if not
+                                        // totalCrossDownloader will check if SDK
+                                        // exists, if not, will download it.
+            TotalCrossSDKDownloader totalCrossSDKDownloader = new TotalCrossSDKDownloader(sdkVersion);
+            totalCrossSDKDownloader.init();
+            totalcrossHome = totalCrossSDKDownloader.getSdkDir();
         }
     }
 
     public void setupArguments() throws MojoExecutionException {
         args = new ArrayList<Element>();
+
+        String requiredClassPath = 
+            projectClassPath + Paths.get(totalcrossHome, "etc", "libs", "*").toAbsolutePath();
+        
         args.add(element("argument", "-cp")); // exec -classpath argument
-        args.add(element("argument", totalcrossSDKJARPath)); // auto generate a classpath
+        args.add(element("argument", requiredClassPath)); // auto generate a classpath
+
         args.add(element("argument", "tc.Deploy"));
         args.add(element("argument",
                 "${project.build.directory}/${project.build.finalName}.${project.packaging}"));
@@ -115,18 +121,9 @@ public class TotalCrossMojo extends AbstractMojo {
     
     public void deploy() throws MojoExecutionException {
 
-        TotalCrossSDKDownloader totalCrossSDKDownloader = new TotalCrossSDKDownloader(sdkVersion);
-
         Element environmentVariables = element("environmentVariables", "");
-        //Setup environment variable
-        if(totalcrossHome != null) {
-            environmentVariables = element("environmentVariables",
+        environmentVariables = element("environmentVariables",
                     element("TOTALCROSS3_HOME", totalcrossHome));
-        } else {
-            totalCrossSDKDownloader.init();
-            environmentVariables = element("environmentVariables",
-                    element("TOTALCROSS3_HOME", totalCrossSDKDownloader.getSdkDir()));
-        }
 
         Element[] elements = new Element[args.size()];
         elements = args.toArray(elements);
