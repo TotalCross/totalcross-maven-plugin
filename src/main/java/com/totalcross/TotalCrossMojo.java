@@ -1,5 +1,6 @@
 package com.totalcross;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Dependency;
@@ -19,6 +20,8 @@ import java.net.URI;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Collection;
 
 import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
 @Mojo(name = "package", requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME)
@@ -57,6 +60,8 @@ public class TotalCrossMojo extends AbstractMojo {
 
     private String projectClassPath = "";
 
+    String classPathSeparator = System.getProperty("os.name").startsWith("Windows") ? ";" : ":";
+
     public void execute() throws MojoExecutionException, MojoFailureException {
         addDependenciesToClasspath();
         setupSDKPath();
@@ -69,7 +74,7 @@ public class TotalCrossMojo extends AbstractMojo {
         for (Artifact artifact : mavenProject.getDependencyArtifacts()) {
             sdkVersion = artifact.getVersion();
             final File file = artifact.getFile();
-            projectClassPath += file.getAbsolutePath() + ":";
+            projectClassPath += file.getAbsolutePath() + classPathSeparator;
         }
     }
 
@@ -84,12 +89,31 @@ public class TotalCrossMojo extends AbstractMojo {
         }
     }
 
+    private String getFiles(String path) {
+        String returnPath = "";
+        String[] extensions = {"jar"};
+        Collection<File> files = FileUtils.listFiles(new File(path), extensions, true);
+        Iterator<File> iterator = files.iterator();
+        
+        while(iterator.hasNext()) {
+            returnPath += iterator.next().getAbsolutePath();
+            if(!iterator.hasNext()) {
+                break;
+            }
+            returnPath += classPathSeparator;
+        }
+        return returnPath;
+    }
+
     public void setupArguments() throws MojoExecutionException {
         args = new ArrayList<Element>();
-
-        String requiredClassPath = 
+        String requiredClassPath;
+        if(System.getProperty("os.name").startsWith("Windows")) {
+            requiredClassPath = projectClassPath + getFiles(totalcrossHome);
+        } else {
+            requiredClassPath = 
             projectClassPath + Paths.get(totalcrossHome, "etc", "libs", "*").toAbsolutePath();
-        
+        }
         args.add(element("argument", "-cp")); // exec -classpath argument
         args.add(element("argument", requiredClassPath)); // auto generate a classpath
 
