@@ -71,7 +71,7 @@ public class TotalCrossMojo extends AbstractMojo {
 
     private void addDependenciesToClasspath() {
         
-        for (Artifact artifact : mavenProject.getDependencyArtifacts()) {
+        for (Artifact artifact : mavenProject.getArtifacts()) {
             sdkVersion = artifact.getVersion();
             final File file = artifact.getFile();
             projectClassPath += file.getAbsolutePath() + classPathSeparator;
@@ -107,15 +107,8 @@ public class TotalCrossMojo extends AbstractMojo {
 
     public void setupArguments() throws MojoExecutionException {
         args = new ArrayList<Element>();
-        String requiredClassPath;
-        if(System.getProperty("os.name").startsWith("Windows")) {
-            requiredClassPath = projectClassPath + getFiles(totalcrossHome);
-        } else {
-            requiredClassPath = 
-            projectClassPath + Paths.get(totalcrossHome, "etc", "libs", "*").toAbsolutePath();
-        }
         args.add(element("argument", "-cp")); // exec -classpath argument
-        args.add(element("argument", requiredClassPath)); // auto generate a classpath
+        args.add(element("argument", projectClassPath)); // auto generate a classpath
 
         args.add(element("argument", "tc.Deploy"));
         args.add(element("argument",

@@ -11,7 +11,6 @@ import me.tongfei.progressbar.ProgressBar;
 import net.lingala.zip4j.ZipFile;
 import org.apache.maven.shared.utils.io.FileUtils;
 
-
 import java.io.*;
 
 
@@ -83,14 +82,10 @@ public class TotalCrossSDKDownloader {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
     }
-
 
     public void unzipSDK() {
         try {
-
             ZipFile zipFile = new ZipFile(sdksLocalRepositoryDir + File.separator + "temp.zip");
             zipFile.extractAll(sdksLocalRepositoryDir);
             new File(sdksLocalRepositoryDir + File.separator + "TotalCross")
@@ -110,16 +105,9 @@ public class TotalCrossSDKDownloader {
         }
     }
 
-    private static String dirpart(String name)
-    {
-        int s = name.lastIndexOf( File.separatorChar );
-        return s == -1 ? null : name.substring( 0, s );
-    }
-
     public String getSdkDir() {
         return sdkDir;
     }
-
 
     public String getVersion() {
         return this.version;
@@ -143,7 +131,4 @@ public class TotalCrossSDKDownloader {
     public String getBaseBucket() {
         return this.baseBucket;
     }
-
-
-    
 }
