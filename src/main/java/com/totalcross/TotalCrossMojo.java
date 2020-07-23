@@ -2,6 +2,7 @@ package com.totalcross;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Plugin;
@@ -70,9 +71,10 @@ public class TotalCrossMojo extends AbstractMojo {
     }
 
     private void addDependenciesToClasspath() {
-        
+        final Artifact totalcrossArtifact = mavenProject.getArtifactMap().get(ArtifactUtils.versionlessKey("com.totalcross", "totalcross-sdk"));
+        sdkVersion = totalcrossArtifact.getVersion();
+
         for (Artifact artifact : mavenProject.getArtifacts()) {
-            sdkVersion = artifact.getVersion();
             final File file = artifact.getFile();
             projectClassPath += file.getAbsolutePath() + classPathSeparator;
         }
