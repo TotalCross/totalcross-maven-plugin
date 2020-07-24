@@ -64,23 +64,17 @@ public class TotalCrossMojo extends AbstractMojo {
     String classPathSeparator = System.getProperty("os.name").startsWith("Windows") ? ";" : ":";
 
     public void execute() throws MojoExecutionException, MojoFailureException {
-        addDependenciesToClasspath();
         setupSDKPath();
         setupArguments();
         deploy();
     }
 
-    private void addDependenciesToClasspath() {
-        final Artifact totalcrossArtifact = mavenProject.getArtifactMap().get(ArtifactUtils.versionlessKey("com.totalcross", "totalcross-sdk"));
+    private void setupSDKPath () {
+        final Artifact totalcrossArtifact = mavenProject
+                .getArtifactMap()
+                    .get(ArtifactUtils
+                            .versionlessKey("com.totalcross", "totalcross-sdk"));
         sdkVersion = totalcrossArtifact.getVersion();
-
-        for (Artifact artifact : mavenProject.getArtifacts()) {
-            final File file = artifact.getFile();
-            projectClassPath += file.getAbsolutePath() + classPathSeparator;
-        }
-    }
-
-    private void setupSDKPath () {      
         //Setup environment variable
         if(totalcrossHome == null) {    // check if SDK path is provided, if not
                                         // totalCrossDownloader will check if SDK
@@ -91,27 +85,10 @@ public class TotalCrossMojo extends AbstractMojo {
         }
     }
 
-    private String getFiles(String path) {
-        String returnPath = "";
-        String[] extensions = {"jar"};
-        Collection<File> files = FileUtils.listFiles(new File(path), extensions, true);
-        Iterator<File> iterator = files.iterator();
-        
-        while(iterator.hasNext()) {
-            returnPath += iterator.next().getAbsolutePath();
-            if(!iterator.hasNext()) {
-                break;
-            }
-            returnPath += classPathSeparator;
-        }
-        return returnPath;
-    }
-
     public void setupArguments() throws MojoExecutionException {
         args = new ArrayList<Element>();
-        args.add(element("argument", "-cp")); // exec -classpath argument
-        args.add(element("argument", projectClassPath)); // auto generate a classpath
-
+        args.add(element("argument", "-classpath")); // exec -classpath argument
+        args.add(element("classpath")); // automatically uses project classpath
         args.add(element("argument", "tc.Deploy"));
         args.add(element("argument",
                 "${project.build.directory}/${project.build.finalName}.${project.packaging}"));
