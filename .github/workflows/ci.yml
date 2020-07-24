@@ -43,4 +43,4 @@ jobs:
         run: mvn deploy -DaltDeploymentRepository=internal.repo::default::https://maven.totalcross.com/artifactory/repo1-release -DskipTests=true -Dinternal.repo.username=${{ secrets.TC_MVN_REPO_USR }} -Dinternal.repo.password=${{ secrets.TC_MVN_REPO_PASS }} -s settings.xml
       - name: Package & Deploy (Nightly)
         if: contains(github.ref, 'develop')
-        run: mvn versions:set -DnewVersion=$(TZ=GMT date +"%F") && mvn deploy -DaltDeploymentRepository=internal.repo::default::https://maven.totalcross.com/artifactory/nightly -DskipTests=true -Dinternal.repo.username=${{ secrets.TC_MVN_REPO_USR }} -Dinternal.repo.password=${{ secrets.TC_MVN_REPO_PASS }} -s settings.xml
+        run: mvn versions:set -DnewVersion=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)-$(TZ=GMT date +"%Y%m%d%H%M") && mvn deploy -DaltDeploymentRepository=internal.repo::default::https://maven.totalcross.com/artifactory/nightly -DskipTests=true -Dinternal.repo.username=${{ secrets.TC_MVN_REPO_USR }} -Dinternal.repo.password=${{ secrets.TC_MVN_REPO_PASS }} -s settings.xml
