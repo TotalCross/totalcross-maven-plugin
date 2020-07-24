@@ -6,7 +6,7 @@
 
     <groupId>com.totalcross</groupId>
     <artifactId>totalcross-maven-plugin</artifactId>
-    <version>1.1.5</version>
+    <version>1.1.6</version>
     <name>totalcross-maven-plugin</name>
     <url>http://maven.apache.org</url>
     <packaging>maven-plugin</packaging>
