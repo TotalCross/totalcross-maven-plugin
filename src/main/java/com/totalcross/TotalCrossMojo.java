@@ -63,17 +63,25 @@ public class TotalCrossMojo extends AbstractMojo {
 
     String classPathSeparator = System.getProperty("os.name").startsWith("Windows") ? ";" : ":";
 
+    Artifact totalcrossArtifact;
+
     public void execute() throws MojoExecutionException, MojoFailureException {
+        addDependenciesToClasspath();
         setupSDKPath();
         setupArguments();
         deploy();
     }
 
+    private void addDependenciesToClasspath() {
+        for (Artifact artifact : mavenProject.getArtifacts()) {
+            final File file = artifact.getFile();
+            projectClassPath += file.getAbsolutePath() + classPathSeparator;
+        }
+        projectClassPath = projectClassPath.substring(0, projectClassPath.length() -1); // removes last : or ;
+    }
+
     private void setupSDKPath () {
-        final Artifact totalcrossArtifact = mavenProject
-                .getArtifactMap()
-                    .get(ArtifactUtils
-                            .versionlessKey("com.totalcross", "totalcross-sdk"));
+        totalcrossArtifact = mavenProject.getArtifactMap().get(ArtifactUtils.versionlessKey("com.totalcross", "totalcross-sdk"));
         sdkVersion = totalcrossArtifact.getVersion();
         //Setup environment variable
         if(totalcrossHome == null) {    // check if SDK path is provided, if not
@@ -85,10 +93,35 @@ public class TotalCrossMojo extends AbstractMojo {
         }
     }
 
+    private String getJarsInsidePath(String path) {
+        String returnPath = "";
+        String[] extensions = {"jar"};
+        Collection<File> files = FileUtils.listFiles(new File(path), extensions, true);
+        Iterator<File> iterator = files.iterator();
+
+        while(iterator.hasNext()) {
+            returnPath += iterator.next().getAbsolutePath();
+            if(!iterator.hasNext()) {
+                break;
+            }
+            returnPath += classPathSeparator;
+        }
+        return returnPath;
+    }
+
     public void setupArguments() throws MojoExecutionException {
         args = new ArrayList<Element>();
-        args.add(element("argument", "-classpath")); // exec -classpath argument
-        args.add(element("classpath")); // automatically uses project classpath
+        args.add(element("argument", "-cp")); // exec -classpath argument
+
+        String requiredClassPath = null;
+        if(totalcrossArtifact.getScope().equals("system")) {
+            requiredClassPath = projectClassPath + classPathSeparator + getJarsInsidePath(totalcrossHome);
+        }
+        else {
+            requiredClassPath = projectClassPath;
+        }
+        args.add(element("argument", requiredClassPath)); // auto generate a classpath
+
         args.add(element("argument", "tc.Deploy"));
         args.add(element("argument",
                 "${project.build.directory}/${project.build.finalName}.${project.packaging}"));
@@ -117,8 +150,7 @@ public class TotalCrossMojo extends AbstractMojo {
     
     public void deploy() throws MojoExecutionException {
 
-        Element environmentVariables = element("environmentVariables", "");
-        environmentVariables = element("environmentVariables",
+        Element environmentVariables = element("environmentVariables",
                     element("TOTALCROSS3_HOME", totalcrossHome));
 
         Element[] elements = new Element[args.size()];
