@@ -7,9 +7,10 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 
+import org.codehaus.plexus.util.FileUtils;
+
 import me.tongfei.progressbar.ProgressBar;
 import net.lingala.zip4j.ZipFile;
-import org.apache.maven.shared.utils.io.FileUtils;
 
 import java.io.*;
 
