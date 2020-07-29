@@ -5,7 +5,7 @@ import java.io.IOException;
 
 import com.totalcross.TotalCrossSDKDownloader;
 
-import org.apache.maven.shared.utils.io.FileUtils;
+import org.codehaus.plexus.util.FileUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
