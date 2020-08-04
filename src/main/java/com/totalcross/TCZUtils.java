@@ -105,7 +105,7 @@ public class TCZUtils {
     }
 
     /**
-     * TotalCross tcz files are only loaded by the vm as totalcross librarys
+     * TotalCross tcz files are only loaded by the vm as totalcross libraries
      * when it ends with Lib.tcz, i.e, KnowCodeXMLLib.tcz. This function adds
      * a Lib, to the end of the word if it doesn't ends with Lib already.
      * Used to find tcz inside a jar and to create libraries. 
