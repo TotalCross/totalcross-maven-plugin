@@ -38,7 +38,7 @@ public class TCZUtils {
     
     /**
      * If the artifact is a totalcross library, it will extract the library tcz
-     * with name 'artifactId'Lib.tcz to output directory in side totalcross-lib
+     * with name 'artifactId'Lib.tcz to output directory inside totalcross-lib
      * folder. 
      * 
      * @param artifact
