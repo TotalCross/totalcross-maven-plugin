@@ -1,11 +1,9 @@
 package com.totalcross;
 
+import com.totalcross.exception.SDKVersionNotFoundException;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.execution.MavenSession;
-import org.apache.maven.model.Dependency;
-import org.apache.maven.model.Plugin;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.BuildPluginManager;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -13,13 +11,8 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.descriptor.PluginDescriptor;
 import org.apache.maven.plugins.annotations.*;
 import org.apache.maven.project.MavenProject;
-import org.codehaus.plexus.classworlds.realm.ClassRealm;
 
 import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Collection;
@@ -76,19 +69,25 @@ public class TotalCrossMojo extends AbstractMojo {
         for (Artifact artifact : mavenProject.getArtifacts()) {
             final File file = artifact.getFile();
             projectClassPath += file.getAbsolutePath() + classPathSeparator;
+            if(artifact.getArtifactId().equals("totalcross-sdk")) {
+                totalcrossArtifact = artifact;
+            }
         }
         projectClassPath = projectClassPath.substring(0, projectClassPath.length() -1); // removes last : or ;
     }
 
     private void setupSDKPath () {
-        totalcrossArtifact = mavenProject.getArtifactMap().get(ArtifactUtils.versionlessKey("com.totalcross", "totalcross-sdk"));
-        sdkVersion = totalcrossArtifact.getVersion();
+
         //Setup environment variable
         if(totalcrossHome == null) {    // check if SDK path is provided, if not
                                         // totalCrossDownloader will check if SDK
                                         // exists, if not, will download it.
-            TotalCrossSDKDownloader totalCrossSDKDownloader = new TotalCrossSDKDownloader(sdkVersion);
-            totalCrossSDKDownloader.init();
+            TotalCrossSDKManager totalCrossSDKDownloader = new TotalCrossSDKManager(mavenProject);
+            try {
+                totalCrossSDKDownloader.init();
+            } catch (SDKVersionNotFoundException e) {
+                getLog().error(e);
+            }
             totalcrossHome = totalCrossSDKDownloader.getSdkDir();
         }
     }

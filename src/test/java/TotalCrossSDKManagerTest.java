@@ -1,18 +1,19 @@
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.File;
 import java.io.IOException;
 
-import com.totalcross.TotalCrossSDKDownloader;
-
+import com.totalcross.TotalCrossSDKManager;
 import org.codehaus.plexus.util.FileUtils;
+import com.totalcross.exception.SDKVersionNotFoundException;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-class TotalCrossSDKDownloaderTest {
+class TotalCrossSDKManagerTest {
 
-    private static TotalCrossSDKDownloader totalCrossSDKDownloader = new TotalCrossSDKDownloader("6.0.4");
+    private static TotalCrossSDKManager totalCrossSDKDownloader = new TotalCrossSDKManager("6.0.4");
     private static String repoTestDir = System.getProperty("user.home") + File.separator + "TotalCrossTestRepo";
 
     @BeforeAll
@@ -32,7 +33,11 @@ class TotalCrossSDKDownloaderTest {
     
     @Test
     void downloadAndUnzip() {
-        totalCrossSDKDownloader.init();
+        try {
+            totalCrossSDKDownloader.init();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         String sdkDir = totalCrossSDKDownloader.getSdkDir();
         
         assertEquals(true, new File(sdkDir).exists(), "SDK 6.0.4 dir should exists");
@@ -53,6 +58,18 @@ class TotalCrossSDKDownloaderTest {
             "TotalCross folder inside TotalCross local repo should have been deleted");
 
         
+    }
+
+    @Test
+    void downloadNonExistingVersion() {
+        totalCrossSDKDownloader = new TotalCrossSDKManager("nonExistingVersion");
+        assertThrows(SDKVersionNotFoundException.class,
+                () -> totalCrossSDKDownloader.init(),
+                "Should throws SDKVersionNotFoundException");
+        String sdkDir = totalCrossSDKDownloader.getSdkDir();
+
+        assertEquals(false, new File(sdkDir).exists(), "SDK nonExistingVersion dir should exists");
+
     }
 
 }
