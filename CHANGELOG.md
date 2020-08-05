@@ -21,7 +21,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update retrolambda to version 2.5.7. 
 
 ### Removed
-
 - Unecessary dependencies
 
 ## [1.1.2] - 2020-07-21
