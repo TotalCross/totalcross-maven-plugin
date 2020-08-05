@@ -27,6 +27,10 @@ public class TCZUtils {
     ArrayList<String> totalcrossLibs;
     Logger logger;
     private String pathToFinalJar;
+    /**
+     * additional files to be added to the new all.pkg created at the target folder
+     */
+    private String [] additionalFilePaths;
 
     TCZUtils (MavenProject mavenProject) {
         this.mavenProject = mavenProject;
@@ -38,7 +42,7 @@ public class TCZUtils {
     
     /**
      * If the artifact is a totalcross library, it will extract the library tcz
-     * with name 'artifactId'Lib.tcz to output directory inside totalcross-lib
+     * with name 'artifactId'Lib.tcz to output directory in side totalcross-lib
      * folder. 
      * 
      * @param artifact
@@ -94,6 +98,12 @@ public class TCZUtils {
                 bw.write("[L]" + tczPath);
                 bw.newLine();
             }
+            if(additionalFilePaths != null) {
+                for (String filePath : additionalFilePaths) {
+                    bw.write("[L]" + filePath);
+                    bw.newLine();
+                }
+            }
             bw.close();
             fos.close();
             
@@ -142,5 +152,13 @@ public class TCZUtils {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public String[] getAdditionalFilePaths() {
+        return additionalFilePaths;
+    }
+
+    public void setAdditionalFilePaths(String[] additionalFilePaths) {
+        this.additionalFilePaths = additionalFilePaths;
     }
 }
