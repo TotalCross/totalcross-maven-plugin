@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - capability to load totalcross java librarys that has its tcz files inside it. Using the same example above, when someone adds a library that has its tcz inside it, the plugin is in charge to take this tcz and place inside the final application.
 
-- parameter <externalResources>. This is a replacement for the file all.pkg. When listing the files inside the this, these files will be added to the root of the final application package. Theses files wont be zipped inside the application tcz files, they accessible inside the final package.
+- parameter <externalResources>. This is a replacement for the file all.pkg. When listing the files inside this, these files will be added to the root of the final application package. Theses files wont be zipped inside the application tcz files, they are accessible inside the final package.
     ```xml
     <externalResources>
         <externalResource>my_exposed_file.png</<externalResource>
