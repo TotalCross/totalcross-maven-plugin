@@ -44,6 +44,9 @@ public class TotalCrossMojo extends AbstractMojo {
     private String[] platforms;
 
     @Parameter
+    private String[] externalResources;
+
+    @Parameter
     private String certificates;
 
     @Parameter
@@ -89,6 +92,7 @@ public class TotalCrossMojo extends AbstractMojo {
 
     public void execute() throws MojoExecutionException, MojoFailureException {
         tczUtils = new TCZUtils(mavenProject);
+        tczUtils.setAdditionalFilePaths(externalResources);
         addDependenciesToClasspath();
         setupSDKPath();
         setupArguments();
