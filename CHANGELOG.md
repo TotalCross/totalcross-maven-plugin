@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - parameter <totalcrossLib>: by setting this parameter to true, one can package a totalcross library that will contain its tcz file inside its final jar, i.e., KnowCodeXML.jar has a KnowCodeXMLLib.tcz inside it.
 
-- capability to load totalcross java libraries that has its tcz files inside it. Using the same example above, when someone adds a library that has its tcz inside it, the plugin is in charge to take this tcz and place inside the final application.
+- Capability of loading TotalCross Java libraries. Using the same example above, when someone adds a library that has its tcz inside it, that is, a TotalCross Java library, now the plugin is charge of copying the library tcz, i.e., `KnowCodeXMLLib.tcz`, and place it inside the final application package.
 
 - parameter <externalResources>. This is a replacement for the file all.pkg. When listing the files inside this, these files will be added to the root of the final application package. Theses files wont be zipped inside the application tcz files, they are accessible inside the final package.
     ```xml
