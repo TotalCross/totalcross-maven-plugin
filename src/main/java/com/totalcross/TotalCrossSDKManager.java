@@ -104,7 +104,6 @@ public class TotalCrossSDKManager {
     }
 
     public void unzip(String source, String dest) {
-        System.out.println(sdksLocalRepositoryDir);
         try {
             ZipFile zipFile = new ZipFile(new File(sdksLocalRepositoryDir, source));
             if(!zipFile.getFile().exists()) return;
@@ -114,7 +113,6 @@ public class TotalCrossSDKManager {
             if(firstFileOnZip.endsWith("\\") || firstFileOnZip.endsWith("/")) {
                 firstFileOnZip = firstFileOnZip.substring(0, firstFileOnZip.length() - 1);
             }
-            System.out.println("first file on zip: \"" + firstFileOnZip + "\"");
             rename(firstFileOnZip, dest);
             FileUtils.deleteDirectory(new File(sdksLocalRepositoryDir,firstFileOnZip));
             FileUtils.deleteDirectory(new File(sdksLocalRepositoryDir,source));
