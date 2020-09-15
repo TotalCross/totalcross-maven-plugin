@@ -12,6 +12,7 @@ import me.tongfei.progressbar.ProgressBar;
 import net.harawata.appdirs.AppDirs;
 import net.harawata.appdirs.AppDirsFactory;
 import net.lingala.zip4j.ZipFile;
+import net.lingala.zip4j.model.FileHeader;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.project.MavenProject;
@@ -19,6 +20,7 @@ import org.codehaus.plexus.util.FileUtils;
 
 import java.io.*;
 import java.nio.file.Paths;
+import java.util.List;
 
 
 public class TotalCrossSDKManager {
@@ -101,25 +103,36 @@ public class TotalCrossSDKManager {
 
     }
 
-    public void unzipSDK() {
+    public void unzip(String source, String dest) {
+        System.out.println(sdksLocalRepositoryDir);
         try {
-            ZipFile zipFile = new ZipFile(sdksLocalRepositoryDir + File.separator + "temp.zip");
+            ZipFile zipFile = new ZipFile(new File(sdksLocalRepositoryDir, source));
             if(!zipFile.getFile().exists()) return;
             zipFile.extractAll(sdksLocalRepositoryDir);
-            new File(sdksLocalRepositoryDir + File.separator + "TotalCross")
-                    .renameTo(new File(sdkDir));
-
-            if (System.getProperty("os.name").startsWith("Windows")) {
-                File from = new File(sdksLocalRepositoryDir + File.separator + "TotalCross");
-                File dest = new File(sdkDir);
-                FileUtils.copyDirectoryStructure(from, dest);
-                FileUtils.deleteDirectory(sdksLocalRepositoryDir + File.separator + "TotalCross");
+            List<FileHeader> filesOnZip = zipFile.getFileHeaders();
+            String firstFileOnZip = filesOnZip.get(0).getFileName();
+            if(firstFileOnZip.endsWith("\\") || firstFileOnZip.endsWith("/")) {
+                firstFileOnZip = firstFileOnZip.substring(0, firstFileOnZip.length() - 1);
             }
-            FileUtils.deleteDirectory(sdksLocalRepositoryDir + File.separator + "temp.zip");
+            System.out.println("first file on zip: \"" + firstFileOnZip + "\"");
+            rename(firstFileOnZip, dest);
+            FileUtils.deleteDirectory(new File(sdksLocalRepositoryDir,firstFileOnZip));
+            FileUtils.deleteDirectory(new File(sdksLocalRepositoryDir,source));
 
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
+        }
+    }
+
+    public void rename(String from, String to) throws IOException {
+        new File(sdksLocalRepositoryDir, from).renameTo(new File(sdksLocalRepositoryDir, to));
+
+        if (System.getProperty("os.name").startsWith("Windows")) {
+            File fromFile = new File(sdksLocalRepositoryDir, from);
+            File toFile = new File(sdksLocalRepositoryDir, to);
+            FileUtils.copyDirectoryStructure(fromFile, toFile);
+            FileUtils.deleteDirectory(new File(sdksLocalRepositoryDir, from));
         }
     }
 
