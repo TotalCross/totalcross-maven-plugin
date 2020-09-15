@@ -19,7 +19,11 @@ import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.FileUtils;
 
 import java.io.*;
+import java.net.ProtocolException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 
 
@@ -27,6 +31,7 @@ public class TotalCrossSDKManager {
 
     private String version;
     private String sdkDir;
+    private String jdkPath;
     private String sdksLocalRepositoryDir;
     private final String baseBucket = "totalcross-release";
     private boolean deleteDirIfSomethingGoesWrong;
@@ -43,7 +48,7 @@ public class TotalCrossSDKManager {
         configureAndCreateDirs();
         if(verifyDir()) return; // No need to download sdk
         downloadSDK();
-        unzipSDK();
+        unzip("temp.zip", version);
     }
 
     public boolean verifyDir() {
@@ -57,6 +62,32 @@ public class TotalCrossSDKManager {
         File dir = new File(sdkDir);
         deleteDirIfSomethingGoesWrong = !dir.exists(); // Should not delete if already exists
         new File(sdkDir).mkdirs();
+    }
+
+    public void downloadJDK() {
+        System.out.println("to baxano");
+        try {
+            String command = "curl -LJO \"https://api.azul.com/zulu/download/community/v1.0/bundles/latest/binary/?jdk_version=8&ext=zip&os=windows&arch=x86&hw_bitness=64\"";
+            ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
+            processBuilder.directory(new File(sdksLocalRepositoryDir));
+            Process process = processBuilder.start();
+            process.waitFor();
+            Path f1 = Paths.get(sdksLocalRepositoryDir, "_jdk_version=8&ext=zip&os=windows&arch=x86&hw_bitness=64");
+            jdkPath = Files.move(f1, f1.resolveSibling("tempjdk.zip"), StandardCopyOption.REPLACE_EXISTING).toFile().getAbsolutePath();
+        } catch(InterruptedException e) {
+            e.printStackTrace();
+            System.exit(1);
+        } catch(ProtocolException e) {
+            e.printStackTrace();
+            System.exit(1);
+        } catch(FileNotFoundException e) {
+            e.printStackTrace();
+            System.exit(1);
+        } catch(IOException e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+        
     }
 
     public void downloadSDK() throws SDKVersionNotFoundException {
@@ -99,8 +130,6 @@ public class TotalCrossSDKManager {
             System.err.println(e.getMessage());
             System.exit(1);
         }
-
-
     }
 
     public void unzip(String source, String dest) {
@@ -124,13 +153,12 @@ public class TotalCrossSDKManager {
     }
 
     public void rename(String from, String to) throws IOException {
-        new File(sdksLocalRepositoryDir, from).renameTo(new File(sdksLocalRepositoryDir, to));
-
-        if (System.getProperty("os.name").startsWith("Windows")) {
+        File file = new File(sdksLocalRepositoryDir, from);
+        File toFile = new File(sdksLocalRepositoryDir, to);
+        if (!file.renameTo(toFile) && System.getProperty("os.name").startsWith("Windows")) {
             File fromFile = new File(sdksLocalRepositoryDir, from);
-            File toFile = new File(sdksLocalRepositoryDir, to);
             FileUtils.copyDirectoryStructure(fromFile, toFile);
-            FileUtils.deleteDirectory(new File(sdksLocalRepositoryDir, from));
+            FileUtils.deleteDirectory(file);
         }
     }
 
@@ -159,6 +187,14 @@ public class TotalCrossSDKManager {
 
     public String getBaseBucket() {
         return this.baseBucket;
+    }
+
+    public String getJdkPath() {
+        return jdkPath;
+    }
+
+    public void setJdkPath(String jdkPath) {
+        this.jdkPath = jdkPath;
     }
 
 }

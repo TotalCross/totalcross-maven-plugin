@@ -64,6 +64,9 @@ public class TotalCrossMojo extends AbstractMojo {
     @Parameter
     private boolean totalcrossLib;
 
+    @Parameter
+    private String jdkPath;
+
     @Component
     private MavenProject mavenProject;
 
@@ -138,6 +141,9 @@ public class TotalCrossMojo extends AbstractMojo {
             }
             totalcrossHome = totalCrossSDKDownloader.getSdkDir();
         }
+        JavaJDKManager javaJDKManager = new JavaJDKManager();
+        javaJDKManager.init();
+        jdkPath = javaJDKManager.getJdkPath();
     }
 
     private String getJarsInsidePath(String path) {
@@ -212,7 +218,8 @@ public class TotalCrossMojo extends AbstractMojo {
 
         Element[] elements = new Element[args.size()];
         elements = args.toArray(elements);
-
+        String javaCommand = Paths.get(jdkPath, "bin", "java").toFile().getAbsolutePath();
+        System.out.println("path usado pro java: " + javaCommand);
         executeMojo(
                 plugin(groupId("org.codehaus.mojo"),
                         artifactId("exec-maven-plugin"),
@@ -220,14 +227,30 @@ public class TotalCrossMojo extends AbstractMojo {
                 goal("exec"),
                 configuration(
                         environmentVariables,
-                        element("executable", "java"),
+                        element("executable", javaCommand),
                         element(name("arguments"), elements)
-                ),
+                ),  
                 executionEnvironment(
                         mavenProject,
                         mavenSession,
                         pluginManager
                 )
         );
+        // executeMojo(
+        //         plugin(groupId("org.codehaus.mojo"),
+        //                 artifactId("exec-maven-plugin"),
+        //                 version("1.6.0")),
+        //         goal("exec"),
+        //         configuration(
+        //                 environmentVariables,
+        //                 element("executable", javaCommand),
+        //                 element(name("arguments"), "-version")
+        //         ),
+        //         executionEnvironment(
+        //                 mavenProject,
+        //                 mavenSession,
+        //                 pluginManager
+        //         )
+        // );
     }
 }
