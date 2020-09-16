@@ -21,12 +21,20 @@ import net.lingala.zip4j.model.FileHeader;
 public class JavaJDKManager {
     private String jdkPath;
     private String sdksLocalRepositoryDir;
+    private static String jdkVersion = "8";
 
     public void downloadJDK() {
         System.out.println("Downloading JDK");
         try {
-            URL url = new URL("https://api.azul.com/zulu/download/community/v1.0/bundles/latest/binary/?jdk_version=8&ext=zip&os=windows&arch=x86&hw_bitness=64");
-            ReadableByteChannel readableByteChannel = Channels.newChannel(url.openStream());
+            String os = null;
+            if (System.getProperty("os.name").toLowerCase().startsWith("windows")) {
+                os = "windows";
+            } else if (System.getProperty("os.name").toLowerCase().startsWith("linux")) {
+                os = "linux";
+            } else if(System.getProperty("os.name").toLowerCase().startsWith("mac")) {
+                os = "macos";
+            }
+            URL url = new URL("https://api.azul.com/zulu/download/community/v1.0/bundles/latest/binary/?jdk_version=" + jdkVersion + "&ext=zip&os=" + os + "&arch=x86&hw_bitness=64");
             File jdkDir = new File(sdksLocalRepositoryDir);
             if(!jdkDir.exists()) {
                 jdkDir.mkdirs();
