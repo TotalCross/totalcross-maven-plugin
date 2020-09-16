@@ -35,6 +35,25 @@ public class JavaJDKManager {
                 os = "macos";
             }
             URL url = new URL("https://api.azul.com/zulu/download/community/v1.0/bundles/latest/binary/?jdk_version=" + jdkVersion + "&ext=zip&os=" + os + "&arch=x86&hw_bitness=64");
+            URLConnection connection = url.openConnection();
+            int fileSize = connection.getContentLength();
+            long read_len = 0;
+            long written = 0;
+            ReadableByteChannel readableByteChannel = Channels.newChannel(connection.getInputStream());
+            File jdkDir = new File(sdksLocalRepositoryDir);
+            if(!jdkDir.exists()) {
+                jdkDir.mkdirs();
+            }
+            FileOutputStream fileOutputStream = new FileOutputStream(new File(sdksLocalRepositoryDir, "zulu_jdk_1-8.zip"));
+            FileChannel fileChannel = fileOutputStream.getChannel();
+            ProgressBar pb = new ProgressBar("Download JDK", fileSize);
+            pb.setExtraMessage("Downloading JDK " + jdkVersion);
+            while((read_len = fileChannel.transferFrom(readableByteChannel, written, 4096)) != 0) {
+                pb.stepBy(read_len);
+                written += read_len;
+            }
+            fileOutputStream.close();
+            pb.close();
             File jdkDir = new File(sdksLocalRepositoryDir);
             if(!jdkDir.exists()) {
                 jdkDir.mkdirs();
