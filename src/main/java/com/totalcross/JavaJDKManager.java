@@ -56,14 +56,6 @@ public class JavaJDKManager {
             }
             fileOutputStream.close();
             pb.close();
-            File jdkDir = new File(sdksLocalRepositoryDir);
-            if(!jdkDir.exists()) {
-                jdkDir.mkdirs();
-            }
-            FileOutputStream fileOutputStream = new FileOutputStream(new File(sdksLocalRepositoryDir, "zulu_jdk_1-8.zip"));
-            FileChannel fileChannel = fileOutputStream.getChannel();
-            fileChannel.transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
-            fileOutputStream.close();
         } catch(ProtocolException e) {
             e.printStackTrace();
             System.exit(1);
