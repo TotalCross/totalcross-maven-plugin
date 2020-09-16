@@ -31,7 +31,6 @@ public class TotalCrossSDKManager {
 
     private String version;
     private String sdkDir;
-    private String jdkPath;
     private String sdksLocalRepositoryDir;
     private final String baseBucket = "totalcross-release";
     private boolean deleteDirIfSomethingGoesWrong;
@@ -62,32 +61,6 @@ public class TotalCrossSDKManager {
         File dir = new File(sdkDir);
         deleteDirIfSomethingGoesWrong = !dir.exists(); // Should not delete if already exists
         new File(sdkDir).mkdirs();
-    }
-
-    public void downloadJDK() {
-        System.out.println("to baxano");
-        try {
-            String command = "curl -LJO \"https://api.azul.com/zulu/download/community/v1.0/bundles/latest/binary/?jdk_version=8&ext=zip&os=windows&arch=x86&hw_bitness=64\"";
-            ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
-            processBuilder.directory(new File(sdksLocalRepositoryDir));
-            Process process = processBuilder.start();
-            process.waitFor();
-            Path f1 = Paths.get(sdksLocalRepositoryDir, "_jdk_version=8&ext=zip&os=windows&arch=x86&hw_bitness=64");
-            jdkPath = Files.move(f1, f1.resolveSibling("tempjdk.zip"), StandardCopyOption.REPLACE_EXISTING).toFile().getAbsolutePath();
-        } catch(InterruptedException e) {
-            e.printStackTrace();
-            System.exit(1);
-        } catch(ProtocolException e) {
-            e.printStackTrace();
-            System.exit(1);
-        } catch(FileNotFoundException e) {
-            e.printStackTrace();
-            System.exit(1);
-        } catch(IOException e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
-        
     }
 
     public void downloadSDK() throws SDKVersionNotFoundException {
@@ -187,14 +160,6 @@ public class TotalCrossSDKManager {
 
     public String getBaseBucket() {
         return this.baseBucket;
-    }
-
-    public String getJdkPath() {
-        return jdkPath;
-    }
-
-    public void setJdkPath(String jdkPath) {
-        this.jdkPath = jdkPath;
     }
 
 }

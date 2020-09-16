@@ -2,12 +2,13 @@ package com.totalcross;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.ProtocolException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.net.URL;
+import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
+import java.nio.channels.ReadableByteChannel;
 import java.util.List;
 
 import org.codehaus.plexus.util.FileUtils;
@@ -22,22 +23,18 @@ public class JavaJDKManager {
     private String sdksLocalRepositoryDir;
 
     public void downloadJDK() {
-        System.out.println("to baxano");
+        System.out.println("Downloading JDK");
         try {
-            String command = "curl -LJO \"https://api.azul.com/zulu/download/community/v1.0/bundles/latest/binary/?jdk_version=8&ext=zip&os=windows&arch=x86&hw_bitness=64\"";
-            ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
+            URL url = new URL("https://api.azul.com/zulu/download/community/v1.0/bundles/latest/binary/?jdk_version=8&ext=zip&os=windows&arch=x86&hw_bitness=64");
+            ReadableByteChannel readableByteChannel = Channels.newChannel(url.openStream());
             File jdkDir = new File(sdksLocalRepositoryDir);
             if(!jdkDir.exists()) {
                 jdkDir.mkdirs();
             }
-            processBuilder.directory(jdkDir);
-            Process process = processBuilder.start();
-            process.waitFor();
-            Path f1 = Paths.get(sdksLocalRepositoryDir, "_jdk_version=8&ext=zip&os=windows&arch=x86&hw_bitness=64");
-            Files.move(f1, f1.resolveSibling("tempjdk.zip"), StandardCopyOption.REPLACE_EXISTING);
-        } catch(InterruptedException e) {
-            e.printStackTrace();
-            System.exit(1);
+            FileOutputStream fileOutputStream = new FileOutputStream(new File(sdksLocalRepositoryDir, "zulu_jdk_1-8.zip"));
+            FileChannel fileChannel = fileOutputStream.getChannel();
+            fileChannel.transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
+            fileOutputStream.close();
         } catch(ProtocolException e) {
             e.printStackTrace();
             System.exit(1);
@@ -75,17 +72,15 @@ public class JavaJDKManager {
 
     public void unzipJDK() {
         try {
-            ZipFile zipFile = new ZipFile(new File(sdksLocalRepositoryDir, "tempjdk.zip"));
+            ZipFile zipFile = new ZipFile(new File(sdksLocalRepositoryDir, "zulu_jdk_1-8.zip"));
             if(!zipFile.getFile().exists()) return;
             zipFile.extractAll(sdksLocalRepositoryDir);
             List<FileHeader> filesOnZip = zipFile.getFileHeaders();
             String firstFileOnZip = filesOnZip.get(0).getFileName();
-            if(firstFileOnZip.endsWith("\\") || firstFileOnZip.endsWith("/")) {
-                firstFileOnZip = firstFileOnZip.substring(0, firstFileOnZip.length() - 1);
-            }
+            firstFileOnZip = firstFileOnZip.substring(0, firstFileOnZip.length() - 1);
             rename(firstFileOnZip, "zulu_jdk_1-8");
             FileUtils.deleteDirectory(new File(sdksLocalRepositoryDir,firstFileOnZip));
-            FileUtils.deleteDirectory(new File(sdksLocalRepositoryDir,"tempjdk.zip"));
+            FileUtils.deleteDirectory(new File(sdksLocalRepositoryDir,"zulu_jdk_1-8.zip"));
 
         } catch (Exception e) {
             e.printStackTrace();
