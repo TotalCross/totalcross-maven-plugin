@@ -219,7 +219,6 @@ public class TotalCrossMojo extends AbstractMojo {
         Element[] elements = new Element[args.size()];
         elements = args.toArray(elements);
         String javaCommand = Paths.get(jdkPath, "bin", "java").toFile().getAbsolutePath();
-        System.out.println("path usado pro java: " + javaCommand);
         executeMojo(
                 plugin(groupId("org.codehaus.mojo"),
                         artifactId("exec-maven-plugin"),
