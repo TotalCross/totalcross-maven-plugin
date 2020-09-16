@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
@@ -13,6 +14,7 @@ import java.util.List;
 
 import org.codehaus.plexus.util.FileUtils;
 
+import me.tongfei.progressbar.ProgressBar;
 import net.harawata.appdirs.AppDirs;
 import net.harawata.appdirs.AppDirsFactory;
 import net.lingala.zip4j.ZipFile;
