@@ -2,6 +2,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 
 import com.totalcross.JavaJDKManager;
 
@@ -10,9 +11,13 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import net.harawata.appdirs.AppDirs;
+import net.harawata.appdirs.AppDirsFactory;
+
 public class JavaJDKManagerTest {
     private static JavaJDKManager javaJDKManager = new JavaJDKManager();
-    private static String repoTestDir = System.getProperty("user.home") + File.separator + "TotalCrossTestRepo";
+    static AppDirs appDirs = AppDirsFactory.getInstance();
+    private static String repoTestDir = Paths.get(appDirs.getUserDataDir("TotalCross", null, null),"TotalCrossTestRepo").toFile().getAbsolutePath();
 
 
     @BeforeAll
