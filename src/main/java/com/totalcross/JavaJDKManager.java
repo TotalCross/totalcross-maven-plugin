@@ -74,6 +74,8 @@ public class JavaJDKManager {
         if(!verifyJDK()) {
             downloadJDK();
             unzipJDK();
+        } else {
+            setJdkPath(new File(sdksLocalRepositoryDir, "zulu_jdk_1-8").getAbsolutePath());
         }
     }
 
