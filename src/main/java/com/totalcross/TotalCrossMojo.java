@@ -236,21 +236,5 @@ public class TotalCrossMojo extends AbstractMojo {
                         pluginManager
                 )
         );
-        // executeMojo(
-        //         plugin(groupId("org.codehaus.mojo"),
-        //                 artifactId("exec-maven-plugin"),
-        //                 version("1.6.0")),
-        //         goal("exec"),
-        //         configuration(
-        //                 environmentVariables,
-        //                 element("executable", javaCommand),
-        //                 element(name("arguments"), "-version")
-        //         ),
-        //         executionEnvironment(
-        //                 mavenProject,
-        //                 mavenSession,
-        //                 pluginManager
-        //         )
-        // );
     }
 }
