@@ -14,8 +14,6 @@ import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.S3Object;
 import com.totalcross.exception.SDKVersionNotFoundException;
 
-import org.codehaus.plexus.util.FileUtils;
-
 import net.harawata.appdirs.AppDirs;
 import net.harawata.appdirs.AppDirsFactory;
 
@@ -32,10 +30,10 @@ public class TotalCrossSDKManager extends DownloadManager {
 
     public void init() throws SDKVersionNotFoundException, IOException {
         configureAndCreateDirs();
-        if (verify())
-            return; // No need to download sdk
-        download();
-        unzip("temp.zip", version);
+        if (!verify()) {
+            download();
+            unzip("temp.zip", version);
+        }
     }
 
     public boolean verify() {
@@ -70,16 +68,6 @@ public class TotalCrossSDKManager extends DownloadManager {
             }
             e.printStackTrace();
             System.exit(1);
-        }
-    }
-
-    protected void rename(String from, String to) throws IOException {
-        File file = new File(localRepositoryDir, from);
-        File toFile = new File(localRepositoryDir, to);
-        if (!file.renameTo(toFile) && isWindows) {
-            File fromFile = new File(localRepositoryDir, from);
-            FileUtils.copyDirectoryStructure(fromFile, toFile);
-            FileUtils.deleteDirectory(file);
         }
     }
 }

@@ -7,8 +7,6 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
-import org.codehaus.plexus.util.FileUtils;
-
 import net.harawata.appdirs.AppDirs;
 import net.harawata.appdirs.AppDirsFactory;
 
@@ -24,9 +22,8 @@ public class JavaJDKManager extends DownloadManager {
         if (!verify()) {
             download();
             unzip("zulu_jdk_1-8.zip", "zulu_jdk_1-8");
-        } else {
-            setPath(new File(localRepositoryDir, "zulu_jdk_1-8").getAbsolutePath());
         }
+        setPath(new File(localRepositoryDir, "zulu_jdk_1-8").getAbsolutePath());
     }
 
     public boolean verify() {
@@ -56,17 +53,6 @@ public class JavaJDKManager extends DownloadManager {
                         new File(localRepositoryDir, "zulu_jdk_1-8.zip"))) {
             super.download("Download JDK " + jdkVersion, inputStream, fileOutputStream, fileSize);
         }
-    }
-
-    protected void rename(String from, String to) throws IOException {
-        File file = new File(localRepositoryDir, from);
-        File toFile = new File(localRepositoryDir, to);
-        if (!file.renameTo(toFile) && isWindows) {
-            File fromFile = new File(localRepositoryDir, from);
-            FileUtils.copyDirectoryStructure(fromFile, toFile);
-            FileUtils.deleteDirectory(file);
-        }
-        setPath(toFile.getAbsolutePath().toString());
     }
 
     @Override

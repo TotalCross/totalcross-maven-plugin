@@ -52,7 +52,15 @@ public abstract class DownloadManager {
       return new File(localRepositoryDir, subpath).exists();
    }
 
-   protected abstract void rename(String from, String to) throws IOException;
+   private void rename(String from, String to) throws IOException {
+      File file = new File(localRepositoryDir, from);
+      File toFile = new File(localRepositoryDir, to);
+      if (!file.renameTo(toFile) && isWindows) {
+         File fromFile = new File(localRepositoryDir, from);
+         FileUtils.copyDirectoryStructure(fromFile, toFile);
+         FileUtils.deleteDirectory(file);
+      }
+   }
 
    public void unzip(String source, String dest) {
       try {
