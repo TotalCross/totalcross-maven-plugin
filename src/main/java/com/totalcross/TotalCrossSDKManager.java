@@ -5,7 +5,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.List;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.regions.Regions;
@@ -21,10 +20,8 @@ import org.codehaus.plexus.util.FileUtils;
 import me.tongfei.progressbar.ProgressBar;
 import net.harawata.appdirs.AppDirs;
 import net.harawata.appdirs.AppDirsFactory;
-import net.lingala.zip4j.ZipFile;
-import net.lingala.zip4j.model.FileHeader;
 
-public class TotalCrossSDKManager extends DownloadManager{
+public class TotalCrossSDKManager extends DownloadManager {
 
     private String version;
     private String sdkDir;
@@ -98,28 +95,7 @@ public class TotalCrossSDKManager extends DownloadManager{
         }
     }
 
-    public void unzip(String source, String dest) {
-        try {
-            ZipFile zipFile = new ZipFile(new File(localRepositoryDir, source));
-            if (!zipFile.getFile().exists())
-                return;
-            zipFile.extractAll(localRepositoryDir);
-            List<FileHeader> filesOnZip = zipFile.getFileHeaders();
-            String firstFileOnZip = filesOnZip.get(0).getFileName();
-            if (firstFileOnZip.endsWith("\\") || firstFileOnZip.endsWith("/")) {
-                firstFileOnZip = firstFileOnZip.substring(0, firstFileOnZip.length() - 1);
-            }
-            rename(firstFileOnZip, dest);
-            FileUtils.deleteDirectory(new File(localRepositoryDir, firstFileOnZip));
-            FileUtils.deleteDirectory(new File(localRepositoryDir, source));
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
-    }
-
-    public void rename(String from, String to) throws IOException {
+    protected void rename(String from, String to) throws IOException {
         File file = new File(localRepositoryDir, from);
         File toFile = new File(localRepositoryDir, to);
         if (!file.renameTo(toFile) && isWindows) {

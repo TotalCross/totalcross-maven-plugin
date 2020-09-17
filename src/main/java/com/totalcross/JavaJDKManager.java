@@ -10,15 +10,12 @@ import java.net.URLConnection;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
-import java.util.List;
 
 import org.codehaus.plexus.util.FileUtils;
 
 import me.tongfei.progressbar.ProgressBar;
 import net.harawata.appdirs.AppDirs;
 import net.harawata.appdirs.AppDirsFactory;
-import net.lingala.zip4j.ZipFile;
-import net.lingala.zip4j.model.FileHeader;
 
 public class JavaJDKManager extends DownloadManager {
     private String jdkPath;
@@ -32,7 +29,7 @@ public class JavaJDKManager extends DownloadManager {
         configureAndCreateDirs();
         if (!verify()) {
             download();
-            unzip();
+            unzip("zulu_jdk_1-8.zip", "zulu_jdk_1-8");
         } else {
             setPath(new File(localRepositoryDir, "zulu_jdk_1-8").getAbsolutePath());
         }
@@ -63,8 +60,7 @@ public class JavaJDKManager extends DownloadManager {
             if (!jdkDir.exists()) {
                 jdkDir.mkdirs();
             }
-            FileOutputStream fileOutputStream = new FileOutputStream(
-                    new File(localRepositoryDir, "zulu_jdk_1-8.zip"));
+            FileOutputStream fileOutputStream = new FileOutputStream(new File(localRepositoryDir, "zulu_jdk_1-8.zip"));
             FileChannel fileChannel = fileOutputStream.getChannel();
             ProgressBar pb = new ProgressBar("Download JDK", fileSize);
             pb.setExtraMessage("Downloading JDK " + jdkVersion);
@@ -87,26 +83,7 @@ public class JavaJDKManager extends DownloadManager {
 
     }
 
-    public void unzip() {
-        try {
-            ZipFile zipFile = new ZipFile(new File(localRepositoryDir, "zulu_jdk_1-8.zip"));
-            if (!zipFile.getFile().exists())
-                return;
-            zipFile.extractAll(localRepositoryDir);
-            List<FileHeader> filesOnZip = zipFile.getFileHeaders();
-            String firstFileOnZip = filesOnZip.get(0).getFileName();
-            firstFileOnZip = firstFileOnZip.substring(0, firstFileOnZip.length() - 1);
-            rename(firstFileOnZip, "zulu_jdk_1-8");
-            FileUtils.deleteDirectory(new File(localRepositoryDir, firstFileOnZip));
-            FileUtils.deleteDirectory(new File(localRepositoryDir, "zulu_jdk_1-8.zip"));
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
-    }
-
-    public void rename(String from, String to) throws IOException {
+    protected void rename(String from, String to) throws IOException {
         File file = new File(localRepositoryDir, from);
         File toFile = new File(localRepositoryDir, to);
         if (!file.renameTo(toFile) && isWindows) {
