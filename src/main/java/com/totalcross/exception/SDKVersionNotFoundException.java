@@ -2,7 +2,8 @@ package com.totalcross.exception;
 
 public class SDKVersionNotFoundException extends Exception {
     String version;
-    public SDKVersionNotFoundException (String version) {
+
+    public SDKVersionNotFoundException(String version) {
         this.version = version;
     }
 

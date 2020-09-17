@@ -17,18 +17,18 @@ import net.harawata.appdirs.AppDirsFactory;
 public class JavaJDKManagerTest {
     private static JavaJDKManager javaJDKManager = new JavaJDKManager();
     static AppDirs appDirs = AppDirsFactory.getInstance();
-    private static String repoTestDir = Paths.get(appDirs.getUserDataDir("TotalCross", null, null),"TotalCrossTestRepo").toFile().getAbsolutePath();
-
+    private static String repoTestDir = Paths
+            .get(appDirs.getUserDataDir("TotalCross", null, null), "TotalCrossTestRepo").toFile().getAbsolutePath();
 
     @BeforeAll
     static void setUpTest() {
-        javaJDKManager.setSdksLocalRepositoryDir(repoTestDir);
+        javaJDKManager.setLocalRepositoryDir(repoTestDir);
     }
 
     @AfterAll
     static void wipeTest() {
         try {
-            FileUtils.deleteDirectory(javaJDKManager.getSdksLocalRepositoryDir());
+            FileUtils.deleteDirectory(javaJDKManager.getLocalRepositoryDir());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -37,7 +37,7 @@ public class JavaJDKManagerTest {
     @Test
     void downloadAndUnzip() {
         javaJDKManager.init();
-        String jdkDir = javaJDKManager.getJdkPath();
+        String jdkDir = javaJDKManager.getPath();
 
         assertEquals(true, new File(jdkDir).exists(), "JDK dir should exist");
         assertEquals(true, new File(jdkDir).isDirectory(), "JDK dir should be a directory");

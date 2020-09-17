@@ -1,6 +1,24 @@
 package com.totalcross;
 
+import static org.twdata.maven.mojoexecutor.MojoExecutor.artifactId;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.configuration;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.element;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.executeMojo;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.executionEnvironment;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.goal;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.groupId;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.name;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.plugin;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.version;
+
+import java.io.File;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+
 import com.totalcross.exception.SDKVersionNotFoundException;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.ArtifactUtils;
@@ -10,26 +28,12 @@ import org.apache.maven.plugin.BuildPluginManager;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.descriptor.PluginDescriptor;
-import org.apache.maven.plugins.annotations.*;
+import org.apache.maven.plugins.annotations.Component;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
-
-import net.lingala.zip4j.ZipFile;
-import net.lingala.zip4j.exception.ZipException;
-import net.lingala.zip4j.model.FileHeader;
-import net.lingala.zip4j.model.ZipParameters;
-import net.lingala.zip4j.model.enums.CompressionLevel;
-import net.lingala.zip4j.model.enums.CompressionMethod;
-
-import java.io.BufferedOutputStream;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Collection;
-
-import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
+import org.twdata.maven.mojoexecutor.MojoExecutor.Element;
 
 @Mojo(name = "package", requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME)
 public class TotalCrossMojo extends AbstractMojo {
@@ -112,7 +116,7 @@ public class TotalCrossMojo extends AbstractMojo {
         for (Artifact artifact : mavenProject.getArtifacts()) {
             final File file = artifact.getFile();
             projectClassPath += file.getAbsolutePath() + classPathSeparator;
-            String output = "│ "+ artifact.getArtifactId() + ".jar";
+            String output = "│ " + artifact.getArtifactId() + ".jar";
             if (tczUtils.extractTCZsFromArtifactDependency(artifact)) {
                 output += " (TotalCross Library)";
                 countTCDeps++;
@@ -127,13 +131,15 @@ public class TotalCrossMojo extends AbstractMojo {
         projectClassPath = projectClassPath.substring(0, projectClassPath.length() - 1); // removes last : or ;
     }
 
-    private void setupSDKPath () {
+    private void setupSDKPath() {
 
-        //Setup environment variable
-        if(totalcrossHome == null) {    // check if SDK path is provided, if not
-                                        // totalCrossDownloader will check if SDK
-                                        // exists, if not, will download it.
-            TotalCrossSDKManager totalCrossSDKDownloader = new TotalCrossSDKManager(mavenProject);
+        // Setup environment variable
+        if (totalcrossHome == null) { // check if SDK path is provided, if not
+                                      // totalCrossDownloader will check if SDK
+                                      // exists, if not, will download it.
+            Artifact totalcrossArtifact = mavenProject.getArtifactMap()
+                    .get(ArtifactUtils.versionlessKey("com.totalcross", "totalcross-sdk"));
+            TotalCrossSDKManager totalCrossSDKDownloader = new TotalCrossSDKManager(totalcrossArtifact.getVersion());
             try {
                 totalCrossSDKDownloader.init();
             } catch (SDKVersionNotFoundException e) {
@@ -143,7 +149,7 @@ public class TotalCrossMojo extends AbstractMojo {
         }
         JavaJDKManager javaJDKManager = new JavaJDKManager();
         javaJDKManager.init();
-        jdkPath = javaJDKManager.getJdkPath();
+        jdkPath = javaJDKManager.getPath();
     }
 
     private String getJarsInsidePath(String path) {
@@ -166,8 +172,7 @@ public class TotalCrossMojo extends AbstractMojo {
         args = new ArrayList<Element>();
         args.add(element("argument", "-cp")); // exec -classpath argument
         Artifact totalcrossArtifact = mavenProject.getArtifactMap()
-                    .get(ArtifactUtils.versionlessKey("com.totalcross"
-                            , "totalcross-sdk"));
+                .get(ArtifactUtils.versionlessKey("com.totalcross", "totalcross-sdk"));
         sdkVersion = totalcrossArtifact.getVersion();
 
         String requiredClassPath = null;
@@ -188,12 +193,11 @@ public class TotalCrossMojo extends AbstractMojo {
         }
 
         // Add app name
-        if(name != null && !totalcrossLib) {
+        if (name != null && !totalcrossLib) {
             args.add(element("argument", "/n"));
             args.add(element("argument", name));
-            
-        }
-        else if(totalcrossLib) {
+
+        } else if (totalcrossLib) {
             args.add(element("argument", "/n"));
             name = mavenProject.getArtifactId();
             name = TCZUtils.verifyAndFixLibName(name);
@@ -219,21 +223,10 @@ public class TotalCrossMojo extends AbstractMojo {
         Element[] elements = new Element[args.size()];
         elements = args.toArray(elements);
         String javaCommand = Paths.get(jdkPath, "bin", "java").toFile().getAbsolutePath();
-        executeMojo(
-                plugin(groupId("org.codehaus.mojo"),
-                        artifactId("exec-maven-plugin"),
-                        version("1.6.0")),
+        executeMojo(plugin(groupId("org.codehaus.mojo"), artifactId("exec-maven-plugin"), version("1.6.0")),
                 goal("exec"),
-                configuration(
-                        environmentVariables,
-                        element("executable", javaCommand),
-                        element(name("arguments"), elements)
-                ),  
-                executionEnvironment(
-                        mavenProject,
-                        mavenSession,
-                        pluginManager
-                )
-        );
+                configuration(environmentVariables, element("executable", javaCommand),
+                        element(name("arguments"), elements)),
+                executionEnvironment(mavenProject, mavenSession, pluginManager));
     }
 }

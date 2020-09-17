@@ -20,90 +20,85 @@ import net.harawata.appdirs.AppDirsFactory;
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.model.FileHeader;
 
-public class JavaJDKManager {
+public class JavaJDKManager extends DownloadManager {
     private String jdkPath;
-    private String sdksLocalRepositoryDir;
     private static String jdkVersion = "8";
 
-    public void downloadJDK() {
+    public JavaJDKManager() {
+        super("zulu_jdk_1-8");
+    }
+
+    public void init() {
+        configureAndCreateDirs();
+        if (!verify()) {
+            download();
+            unzip();
+        } else {
+            setPath(new File(localRepositoryDir, "zulu_jdk_1-8").getAbsolutePath());
+        }
+    }
+
+    public boolean verify() {
+        return new File(localRepositoryDir, "zulu_jdk_1-8").exists();
+    }
+
+    public void configureAndCreateDirs() {
+        AppDirs appDirs = AppDirsFactory.getInstance();
+        if (localRepositoryDir != null)
+            return;
+        localRepositoryDir = appDirs.getUserDataDir("TotalCross", null, null);
+    }
+
+    public void download() {
         System.out.println("Downloading JDK");
         try {
-            String os = null;
-            if (System.getProperty("os.name").toLowerCase().startsWith("windows")) {
-                os = "windows";
-            } else if (System.getProperty("os.name").toLowerCase().startsWith("linux")) {
-                os = "linux";
-            } else if(System.getProperty("os.name").toLowerCase().startsWith("mac")) {
-                os = "macos";
-            }
-            URL url = new URL("https://api.azul.com/zulu/download/community/v1.0/bundles/latest/binary/?jdk_version=" + jdkVersion + "&ext=zip&os=" + os + "&arch=x86&hw_bitness=64");
+            URL url = new URL("https://api.azul.com/zulu/download/community/v1.0/bundles/latest/binary/?jdk_version="
+                    + jdkVersion + "&ext=zip&os=" + SYSTEM_OS + "&arch=x86&hw_bitness=64");
             URLConnection connection = url.openConnection();
             int fileSize = connection.getContentLength();
             long read_len = 0;
             long written = 0;
             ReadableByteChannel readableByteChannel = Channels.newChannel(connection.getInputStream());
-            File jdkDir = new File(sdksLocalRepositoryDir);
-            if(!jdkDir.exists()) {
+            File jdkDir = new File(localRepositoryDir);
+            if (!jdkDir.exists()) {
                 jdkDir.mkdirs();
             }
-            FileOutputStream fileOutputStream = new FileOutputStream(new File(sdksLocalRepositoryDir, "zulu_jdk_1-8.zip"));
+            FileOutputStream fileOutputStream = new FileOutputStream(
+                    new File(localRepositoryDir, "zulu_jdk_1-8.zip"));
             FileChannel fileChannel = fileOutputStream.getChannel();
             ProgressBar pb = new ProgressBar("Download JDK", fileSize);
             pb.setExtraMessage("Downloading JDK " + jdkVersion);
-            while((read_len = fileChannel.transferFrom(readableByteChannel, written, 4096)) != 0) {
+            while ((read_len = fileChannel.transferFrom(readableByteChannel, written, 4096)) != 0) {
                 pb.stepBy(read_len);
                 written += read_len;
             }
             fileOutputStream.close();
             pb.close();
-        } catch(ProtocolException e) {
+        } catch (ProtocolException e) {
             e.printStackTrace();
             System.exit(1);
-        } catch(FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
             System.exit(1);
-        } catch(IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             System.exit(1);
         }
-        
+
     }
 
-    public void init() {
-        configureAndCreateDirs();
-        if(!verifyJDK()) {
-            downloadJDK();
-            unzipJDK();
-        } else {
-            setJdkPath(new File(sdksLocalRepositoryDir, "zulu_jdk_1-8").getAbsolutePath());
-        }
-    }
-
-    public boolean verifyJDK() {
-        return new File(sdksLocalRepositoryDir, "zulu_jdk_1-8").exists();
-    }
-
-    public void configureAndCreateDirs() {
-        AppDirs appDirs = AppDirsFactory.getInstance();
-        if(sdksLocalRepositoryDir != null) return;
-        sdksLocalRepositoryDir = appDirs.getUserDataDir("TotalCross", null, null);
-    }
-
-    public String getJdkPath() {
-        return jdkPath;
-    }
-
-    public void unzipJDK() {
+    public void unzip() {
         try {
-            ZipFile zipFile = new ZipFile(new File(sdksLocalRepositoryDir, "zulu_jdk_1-8.zip"));
-            if(!zipFile.getFile().exists()) return;
-            zipFile.extractAll(sdksLocalRepositoryDir);
+            ZipFile zipFile = new ZipFile(new File(localRepositoryDir, "zulu_jdk_1-8.zip"));
+            if (!zipFile.getFile().exists())
+                return;
+            zipFile.extractAll(localRepositoryDir);
             List<FileHeader> filesOnZip = zipFile.getFileHeaders();
             String firstFileOnZip = filesOnZip.get(0).getFileName();
             firstFileOnZip = firstFileOnZip.substring(0, firstFileOnZip.length() - 1);
             rename(firstFileOnZip, "zulu_jdk_1-8");
-            FileUtils.deleteDirectory(new File(sdksLocalRepositoryDir,firstFileOnZip));
-            FileUtils.deleteDirectory(new File(sdksLocalRepositoryDir,"zulu_jdk_1-8.zip"));
+            FileUtils.deleteDirectory(new File(localRepositoryDir, firstFileOnZip));
+            FileUtils.deleteDirectory(new File(localRepositoryDir, "zulu_jdk_1-8.zip"));
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -112,28 +107,24 @@ public class JavaJDKManager {
     }
 
     public void rename(String from, String to) throws IOException {
-        File file = new File(sdksLocalRepositoryDir, from);
-        File toFile = new File(sdksLocalRepositoryDir, to);
-        if (!file.renameTo(toFile) && System.getProperty("os.name").startsWith("Windows")) {
-            File fromFile = new File(sdksLocalRepositoryDir, from);
+        File file = new File(localRepositoryDir, from);
+        File toFile = new File(localRepositoryDir, to);
+        if (!file.renameTo(toFile) && isWindows) {
+            File fromFile = new File(localRepositoryDir, from);
             FileUtils.copyDirectoryStructure(fromFile, toFile);
             FileUtils.deleteDirectory(file);
         }
-        setJdkPath(toFile.getAbsolutePath().toString());
+        setPath(toFile.getAbsolutePath().toString());
     }
 
-    public void setJdkPath(String jdkPath) {
+    public String getPath() {
+        return jdkPath;
+    }
+
+    public void setPath(String jdkPath) {
         this.jdkPath = jdkPath;
-        if (System.getProperty("os.name").toLowerCase().startsWith("mac")) {
+        if (isMac) {
             this.jdkPath += "/zulu-8.jre/Contents/Home";
         }
-    }
-
-    public String getSdksLocalRepositoryDir() {
-        return sdksLocalRepositoryDir;
-    }
-
-    public void setSdksLocalRepositoryDir(String sdksLocalRepositoryDir) {
-        this.sdksLocalRepositoryDir = sdksLocalRepositoryDir;
     }
 }
