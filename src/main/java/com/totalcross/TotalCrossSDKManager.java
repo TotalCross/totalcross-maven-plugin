@@ -91,17 +91,4 @@ public class TotalCrossSDKManager extends DownloadManager {
     public void setPath(String sdkDir) {
         this.sdkDir = sdkDir;
     }
-
-    public String getBaseBucket() {
-        return this.baseBucket;
-    }
-
-    public String getVersion() {
-        return this.version;
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
-    }
-
 }
