@@ -19,7 +19,9 @@ public abstract class DownloadManager {
    public static final boolean isWindows = System.getProperty("os.name").toLowerCase().startsWith("windows");
    public static final boolean isLinux = System.getProperty("os.name").toLowerCase().startsWith("linux");
    public static final boolean isMac = System.getProperty("os.name").toLowerCase().startsWith("mac");
+   public static final boolean is64bits = System.getProperty("os.arch").contains("64");
    public static final String SYSTEM_OS = isWindows ? "windows" : isLinux ? "linux" : isMac ? "macos" : "undefined";
+   public static final String SYSTEM_BITNESS = is64bits ? "64" : "32";
 
    protected String localRepositoryDir;
 

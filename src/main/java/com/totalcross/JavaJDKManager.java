@@ -50,7 +50,7 @@ public class JavaJDKManager extends DownloadManager {
         System.out.println("Downloading JDK");
         try {
             URL url = new URL("https://api.azul.com/zulu/download/community/v1.0/bundles/latest/binary/?jdk_version="
-                    + jdkVersion + "&ext=zip&os=" + SYSTEM_OS + "&arch=x86&hw_bitness=64");
+                    + jdkVersion + "&ext=zip&os=" + SYSTEM_OS + "&arch=x86&hw_bitness=" + SYSTEM_BITNESS);
             URLConnection connection = url.openConnection();
             File jdkDir = new File(localRepositoryDir);
             if (!jdkDir.exists()) {
