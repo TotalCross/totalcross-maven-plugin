@@ -124,6 +124,9 @@ public class JavaJDKManager {
 
     public void setJdkPath(String jdkPath) {
         this.jdkPath = jdkPath;
+        if (System.getProperty("os.name").toLowerCase().startsWith("mac")) {
+            this.jdkPath += "/zulu-8.jre/Contents/Home";
+        }
     }
 
     public String getSdksLocalRepositoryDir() {
