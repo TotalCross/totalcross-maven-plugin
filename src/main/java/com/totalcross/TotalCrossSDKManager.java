@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
+import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Paths;
 
 import com.amazonaws.AmazonServiceException;
@@ -61,22 +64,15 @@ public class TotalCrossSDKManager extends DownloadManager {
 
             System.out.println(o.getBucketName());
             System.out.println(o.getKey());
-            S3ObjectInputStream s3is = o.getObjectContent();
-            FileOutputStream fos = new FileOutputStream(new File(localRepositoryDir + File.separator + "temp.zip"));
-            byte[] read_buf = new byte[1024];
-            int read_len = 0;
 
             long fileSize = o.getObjectMetadata().getContentLength();
-            ProgressBar pb = new ProgressBar("Download SDK", fileSize);
-            pb.setExtraMessage("Downloading TotalCross SDK " + version);
+            S3ObjectInputStream s3is = o.getObjectContent();
+            FileOutputStream fileOutputStream = new FileOutputStream(new File(localRepositoryDir + File.separator + "temp.zip"));
 
-            while ((read_len = s3is.read(read_buf)) > 0) {
-                fos.write(read_buf, 0, read_len);
-                pb.stepBy(read_len);
-            }
-            pb.close();
+            super.download("Download TotalCross SDK " + version, s3is, fileOutputStream, fileSize);
+            
+            fileOutputStream.close();
             s3is.close();
-            fos.close();
         } catch (AmazonServiceException e) {
             if (e instanceof AmazonS3Exception && ((AmazonS3Exception) e).getStatusCode() == 404) {
                 if (deleteDirIfSomethingGoesWrong) {

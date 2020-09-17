@@ -52,24 +52,17 @@ public class JavaJDKManager extends DownloadManager {
             URL url = new URL("https://api.azul.com/zulu/download/community/v1.0/bundles/latest/binary/?jdk_version="
                     + jdkVersion + "&ext=zip&os=" + SYSTEM_OS + "&arch=x86&hw_bitness=64");
             URLConnection connection = url.openConnection();
-            int fileSize = connection.getContentLength();
-            long read_len = 0;
-            long written = 0;
-            ReadableByteChannel readableByteChannel = Channels.newChannel(connection.getInputStream());
             File jdkDir = new File(localRepositoryDir);
             if (!jdkDir.exists()) {
                 jdkDir.mkdirs();
             }
+
+            long fileSize = connection.getContentLength();
             FileOutputStream fileOutputStream = new FileOutputStream(new File(localRepositoryDir, "zulu_jdk_1-8.zip"));
-            FileChannel fileChannel = fileOutputStream.getChannel();
-            ProgressBar pb = new ProgressBar("Download JDK", fileSize);
-            pb.setExtraMessage("Downloading JDK " + jdkVersion);
-            while ((read_len = fileChannel.transferFrom(readableByteChannel, written, 4096)) != 0) {
-                pb.stepBy(read_len);
-                written += read_len;
-            }
+            
+            super.download("Download JDK " + jdkVersion, connection.getInputStream(), fileOutputStream, fileSize);
+            
             fileOutputStream.close();
-            pb.close();
         } catch (ProtocolException e) {
             e.printStackTrace();
             System.exit(1);

@@ -1,11 +1,17 @@
 package com.totalcross;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
+import java.nio.channels.ReadableByteChannel;
 import java.util.List;
 
 import org.codehaus.plexus.util.FileUtils;
 
+import me.tongfei.progressbar.ProgressBar;
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.model.FileHeader;
 
@@ -56,5 +62,18 @@ public abstract class DownloadManager {
          e.printStackTrace();
          System.exit(1);
       }
+   }
+
+   protected void download(String taskName, InputStream input, FileOutputStream output, long inputSize)
+         throws IOException {
+      final ReadableByteChannel readableByteChannel = Channels.newChannel(input);
+      final FileChannel fileChannel = output.getChannel();
+      final ProgressBar pb = new ProgressBar(taskName, inputSize);
+      for (long ret = 0, written = 0; 
+            (ret = fileChannel.transferFrom(readableByteChannel, written, 8192)) != 0; 
+            written += ret) {
+         pb.stepBy(ret);
+      }
+      pb.close();
    }
 }
