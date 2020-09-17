@@ -13,7 +13,6 @@ import net.harawata.appdirs.AppDirs;
 import net.harawata.appdirs.AppDirsFactory;
 
 public class JavaJDKManager extends DownloadManager {
-    private String jdkPath;
     private static String jdkVersion = "8";
 
     public JavaJDKManager() {
@@ -70,14 +69,11 @@ public class JavaJDKManager extends DownloadManager {
         setPath(toFile.getAbsolutePath().toString());
     }
 
-    public String getPath() {
-        return jdkPath;
-    }
-
-    public void setPath(String jdkPath) {
-        this.jdkPath = jdkPath;
+    @Override
+    protected void setPath(String path) {
         if (isMac) {
-            this.jdkPath += "/zulu-8.jre/Contents/Home";
+            path += "/zulu-8.jre/Contents/Home";
         }
+        super.setPath(path);
     }
 }
