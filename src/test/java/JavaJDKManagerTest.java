@@ -36,7 +36,12 @@ public class JavaJDKManagerTest {
 
     @Test
     void downloadAndUnzip() {
-        javaJDKManager.init();
+        try {
+            javaJDKManager.init();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         String jdkDir = javaJDKManager.getPath();
 
         assertEquals(true, new File(jdkDir).exists(), "JDK dir should exist");

@@ -1,12 +1,9 @@
 package com.totalcross;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.channels.Channels;
-import java.nio.channels.FileChannel;
-import java.nio.channels.ReadableByteChannel;
+import java.io.InputStream;
 import java.nio.file.Paths;
 
 import com.amazonaws.AmazonServiceException;
@@ -15,12 +12,10 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.totalcross.exception.SDKVersionNotFoundException;
 
 import org.codehaus.plexus.util.FileUtils;
 
-import me.tongfei.progressbar.ProgressBar;
 import net.harawata.appdirs.AppDirs;
 import net.harawata.appdirs.AppDirsFactory;
 
@@ -36,7 +31,7 @@ public class TotalCrossSDKManager extends DownloadManager {
         this.version = sdkVersion;
     }
 
-    public void init() throws SDKVersionNotFoundException {
+    public void init() throws SDKVersionNotFoundException, IOException {
         configureAndCreateDirs();
         if (verify())
             return; // No need to download sdk
@@ -57,22 +52,16 @@ public class TotalCrossSDKManager extends DownloadManager {
         new File(sdkDir).mkdirs();
     }
 
-    public void download() throws SDKVersionNotFoundException {
+    public void download() throws SDKVersionNotFoundException, IOException {
         final AmazonS3 s3 = AmazonS3ClientBuilder.standard().withRegion(Regions.DEFAULT_REGION).build();
-        try {
-            S3Object o = s3.getObject(baseBucket, version.substring(0, 3) + "/TotalCross-" + version + ".zip");
-
-            System.out.println(o.getBucketName());
-            System.out.println(o.getKey());
-
+        try (S3Object o = s3.getObject(baseBucket, version.substring(0, 3) + "/TotalCross-" + version + ".zip")) {
             long fileSize = o.getObjectMetadata().getContentLength();
-            S3ObjectInputStream s3is = o.getObjectContent();
-            FileOutputStream fileOutputStream = new FileOutputStream(new File(localRepositoryDir + File.separator + "temp.zip"));
 
-            super.download("Download TotalCross SDK " + version, s3is, fileOutputStream, fileSize);
-            
-            fileOutputStream.close();
-            s3is.close();
+            try (InputStream inputStream = o.getObjectContent();
+                    FileOutputStream fileOutputStream = new FileOutputStream(
+                            new File(localRepositoryDir, "temp.zip"))) {
+                super.download("Download TotalCross SDK " + version, inputStream, fileOutputStream, fileSize);
+            }
         } catch (AmazonServiceException e) {
             if (e instanceof AmazonS3Exception && ((AmazonS3Exception) e).getStatusCode() == 404) {
                 if (deleteDirIfSomethingGoesWrong) {
@@ -81,12 +70,6 @@ public class TotalCrossSDKManager extends DownloadManager {
                 throw new SDKVersionNotFoundException(version);
             }
             e.printStackTrace();
-            System.exit(1);
-        } catch (FileNotFoundException e) {
-            System.err.println(e.getMessage());
-            System.exit(1);
-        } catch (IOException e) {
-            System.err.println(e.getMessage());
             System.exit(1);
         }
     }

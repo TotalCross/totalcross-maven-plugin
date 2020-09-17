@@ -36,9 +36,14 @@ class TotalCrossSDKManagerTest {
     void downloadAndUnzip() {
         try {
             totalCrossSDKDownloader.init();
-        } catch (Exception e) {
+        } catch (SDKVersionNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
             e.printStackTrace();
         }
+
         String sdkDir = totalCrossSDKDownloader.getSdkDir();
 
         assertEquals(true, new File(sdkDir).exists(), "SDK 6.0.4 dir should exists");

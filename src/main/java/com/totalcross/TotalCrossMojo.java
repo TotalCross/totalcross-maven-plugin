@@ -12,6 +12,7 @@ import static org.twdata.maven.mojoexecutor.MojoExecutor.plugin;
 import static org.twdata.maven.mojoexecutor.MojoExecutor.version;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -101,7 +102,11 @@ public class TotalCrossMojo extends AbstractMojo {
         tczUtils = new TCZUtils(mavenProject);
         tczUtils.setAdditionalFilePaths(externalResources);
         addDependenciesToClasspath();
-        setupSDKPath();
+        try {
+            setupSDKPath();
+        } catch (IOException e) {
+            throw new MojoExecutionException(e.getMessage(), e);
+        }
         setupArguments();
         deploy();
         if (totalcrossLib) {
@@ -131,7 +136,7 @@ public class TotalCrossMojo extends AbstractMojo {
         projectClassPath = projectClassPath.substring(0, projectClassPath.length() - 1); // removes last : or ;
     }
 
-    private void setupSDKPath() {
+    private void setupSDKPath() throws IOException {
 
         // Setup environment variable
         if (totalcrossHome == null) { // check if SDK path is provided, if not
