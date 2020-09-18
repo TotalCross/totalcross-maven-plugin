@@ -46,8 +46,7 @@ class TotalCrossSDKManagerTest {
         assertEquals(true, new File(sdkDir, "docs").exists(), "docs dir should be a exists");
         assertEquals(true, new File(sdkDir, "etc").exists(), "etc dir should be a exists");
         assertEquals(true, new File(sdkDir, "src").exists(), "src dir should be a exists");
-        assertEquals(true, new File(sdkDir, "license.txt").exists(),
-                "license.txt dir should be a exists");
+        assertEquals(true, new File(sdkDir, "license.txt").exists(), "license.txt dir should be a exists");
 
         assertEquals(false, new File(totalCrossSDKDownloader.getLocalRepositoryDir(),
                 totalCrossSDKDownloader.baseFolderName + ".zip").exists(), "zip file should have been deleted");
