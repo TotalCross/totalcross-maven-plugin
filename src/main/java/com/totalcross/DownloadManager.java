@@ -69,8 +69,7 @@ public abstract class DownloadManager {
       }
    }
 
-   public void unzip() {
-      try {
+   public void unzip() throws IOException {
          ZipFile zipFile = new ZipFile(new File(localRepositoryDir, baseFolderName + ".zip"));
          if (!zipFile.getFile().exists())
             return;
@@ -83,11 +82,6 @@ public abstract class DownloadManager {
          rename(firstFileOnZip, baseFolderName);
          FileUtils.deleteDirectory(new File(localRepositoryDir, firstFileOnZip));
          FileUtils.deleteDirectory(new File(localRepositoryDir, baseFolderName + ".zip"));
-
-      } catch (Exception e) {
-         e.printStackTrace();
-         System.exit(1);
-      }
    }
 
    protected void download(String taskName, InputStream input, long inputSize) throws IOException {
