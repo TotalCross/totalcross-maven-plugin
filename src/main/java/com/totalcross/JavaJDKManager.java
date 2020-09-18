@@ -21,13 +21,13 @@ public class JavaJDKManager extends DownloadManager {
         configureAndCreateDirs();
         if (!verify()) {
             download();
-            unzip("zulu_jdk_1-8.zip", "zulu_jdk_1-8");
+            unzip("zulu_jdk_1-8.zip", baseFolderName);
         }
-        setPath(new File(localRepositoryDir, "zulu_jdk_1-8").getAbsolutePath());
+        setPath(new File(localRepositoryDir, baseFolderName).getAbsolutePath());
     }
 
     public boolean verify() {
-        return new File(localRepositoryDir, "zulu_jdk_1-8").exists();
+        return new File(localRepositoryDir, baseFolderName).exists();
     }
 
     public void configureAndCreateDirs() {
