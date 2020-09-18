@@ -21,7 +21,7 @@ public class JavaJDKManager extends DownloadManager {
         configureAndCreateDirs();
         if (!verify()) {
             download();
-            unzip(baseFolderName + ".zip", baseFolderName);
+            unzip();
         }
         setPath(new File(localRepositoryDir, baseFolderName).getAbsolutePath());
     }

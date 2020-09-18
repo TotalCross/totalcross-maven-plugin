@@ -29,7 +29,7 @@ public class TotalCrossSDKManager extends DownloadManager {
         configureAndCreateDirs();
         if (!verify()) {
             download();
-            unzip(baseFolderName + ".zip", baseFolderName);
+            unzip();
         }
     }
 
