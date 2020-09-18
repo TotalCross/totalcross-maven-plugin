@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Paths;
 
-import com.amazonaws.AmazonServiceException;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
@@ -54,15 +53,14 @@ public class TotalCrossSDKManager extends DownloadManager {
             try (InputStream inputStream = o.getObjectContent()) {
                 super.download("Download TotalCross SDK " + baseFolderName, inputStream, fileSize);
             }
-        } catch (AmazonServiceException e) {
-            if (e instanceof AmazonS3Exception && ((AmazonS3Exception) e).getStatusCode() == 404) {
+        } catch (AmazonS3Exception e) {
+            if (e.getStatusCode() == 404) {
                 if (deleteDirIfSomethingGoesWrong) {
                     getPath().delete();
                 }
                 throw new SDKVersionNotFoundException(baseFolderName);
             }
-            e.printStackTrace();
-            System.exit(1);
+            throw e;
         }
     }
 }
