@@ -18,8 +18,7 @@ import net.harawata.appdirs.AppDirs;
 import net.harawata.appdirs.AppDirsFactory;
 
 public class TotalCrossSDKManager extends DownloadManager {
-
-    private final String baseBucket = "totalcross-release";
+    private static final String BASE_BUCKET = "totalcross-release";
     private boolean deleteDirIfSomethingGoesWrong;
 
     public TotalCrossSDKManager(String sdkVersion) {
@@ -49,7 +48,8 @@ public class TotalCrossSDKManager extends DownloadManager {
 
     public void download() throws SDKVersionNotFoundException, IOException {
         final AmazonS3 s3 = AmazonS3ClientBuilder.standard().withRegion(Regions.DEFAULT_REGION).build();
-        try (S3Object o = s3.getObject(baseBucket, baseFolderName.substring(0, 3) + "/TotalCross-" + baseFolderName + ".zip")) {
+        try (S3Object o = s3.getObject(BASE_BUCKET,
+                baseFolderName.substring(0, 3) + "/TotalCross-" + baseFolderName + ".zip")) {
             long fileSize = o.getObjectMetadata().getContentLength();
 
             try (InputStream inputStream = o.getObjectContent();
