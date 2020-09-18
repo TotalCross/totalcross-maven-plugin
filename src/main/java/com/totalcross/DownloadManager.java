@@ -26,7 +26,7 @@ public abstract class DownloadManager {
    protected String localRepositoryDir;
 
    private File path;
-   protected final String baseFolderName;
+   public final String baseFolderName;
 
    DownloadManager(String baseFolderName) {
       this.baseFolderName = baseFolderName;

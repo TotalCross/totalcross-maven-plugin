@@ -29,7 +29,7 @@ public class TotalCrossSDKManager extends DownloadManager {
         configureAndCreateDirs();
         if (!verify()) {
             download();
-            unzip("temp.zip", baseFolderName);
+            unzip(baseFolderName + ".zip", baseFolderName);
         }
     }
 
@@ -54,7 +54,7 @@ public class TotalCrossSDKManager extends DownloadManager {
 
             try (InputStream inputStream = o.getObjectContent();
                     FileOutputStream fileOutputStream = new FileOutputStream(
-                            new File(localRepositoryDir, "temp.zip"))) {
+                            new File(localRepositoryDir, baseFolderName + ".zip"))) {
                 super.download("Download TotalCross SDK " + baseFolderName, inputStream, fileOutputStream, fileSize);
             }
         } catch (AmazonServiceException e) {

@@ -21,7 +21,7 @@ public class JavaJDKManager extends DownloadManager {
         configureAndCreateDirs();
         if (!verify()) {
             download();
-            unzip("zulu_jdk_1-8.zip", baseFolderName);
+            unzip(baseFolderName + ".zip", baseFolderName);
         }
         setPath(new File(localRepositoryDir, baseFolderName).getAbsolutePath());
     }
@@ -50,7 +50,7 @@ public class JavaJDKManager extends DownloadManager {
 
         try (InputStream inputStream = connection.getInputStream();
                 FileOutputStream fileOutputStream = new FileOutputStream(
-                        new File(localRepositoryDir, "zulu_jdk_1-8.zip"))) {
+                        new File(localRepositoryDir, baseFolderName + ".zip"))) {
             super.download("Download JDK " + jdkVersion, inputStream, fileOutputStream, fileSize);
         }
     }

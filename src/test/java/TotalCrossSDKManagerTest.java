@@ -56,8 +56,8 @@ class TotalCrossSDKManagerTest {
                 "license.txt dir should be a exists");
 
         assertEquals(false,
-                new File(totalCrossSDKDownloader.getLocalRepositoryDir() + File.separator + "temp.zip").exists(),
-                "temp.zip should have been deleted");
+                new File(totalCrossSDKDownloader.getLocalRepositoryDir(), totalCrossSDKDownloader.baseFolderName + ".zip").exists(),
+                "zip file should have been deleted");
         assertEquals(false,
                 new File(totalCrossSDKDownloader.getLocalRepositoryDir() + File.separator + "TotalCross").exists(),
                 "TotalCross folder inside TotalCross local repo should have been deleted");
