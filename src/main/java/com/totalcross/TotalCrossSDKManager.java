@@ -31,10 +31,6 @@ public class TotalCrossSDKManager extends DownloadManager {
         }
     }
 
-    public boolean verify() {
-        return new File(getPath(), "etc").exists();
-    }
-
     public void configureAndCreateDirs() {
         AppDirs appDirs = AppDirsFactory.getInstance();
         localRepositoryDir = appDirs.getUserDataDir("TotalCross", null, null);

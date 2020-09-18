@@ -25,10 +25,6 @@ public class JavaJDKManager extends DownloadManager {
         setPath(new File(localRepositoryDir, baseFolderName).getAbsolutePath());
     }
 
-    public boolean verify() {
-        return new File(localRepositoryDir, baseFolderName).exists();
-    }
-
     public void configureAndCreateDirs() {
         AppDirs appDirs = AppDirsFactory.getInstance();
         if (localRepositoryDir != null)

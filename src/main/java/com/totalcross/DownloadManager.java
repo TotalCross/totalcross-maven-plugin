@@ -52,6 +52,10 @@ public abstract class DownloadManager {
       return new File(localRepositoryDir, subpath).exists();
    }
 
+   public boolean verify() {
+      return path.exists();
+   }
+
    private void rename(String from, String to) throws IOException {
       File file = new File(localRepositoryDir, from);
       File toFile = new File(localRepositoryDir, to);
