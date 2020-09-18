@@ -1,7 +1,6 @@
 package com.totalcross;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -48,10 +47,8 @@ public class JavaJDKManager extends DownloadManager {
             jdkDir.mkdirs();
         }
 
-        try (InputStream inputStream = connection.getInputStream();
-                FileOutputStream fileOutputStream = new FileOutputStream(
-                        new File(localRepositoryDir, baseFolderName + ".zip"))) {
-            super.download("Download JDK " + jdkVersion, inputStream, fileOutputStream, fileSize);
+        try (InputStream inputStream = connection.getInputStream()) {
+            super.download("Download JDK " + jdkVersion, inputStream, fileSize);
         }
     }
 

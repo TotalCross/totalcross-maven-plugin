@@ -1,7 +1,6 @@
 package com.totalcross;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Paths;
@@ -52,10 +51,8 @@ public class TotalCrossSDKManager extends DownloadManager {
                 baseFolderName.substring(0, 3) + "/TotalCross-" + baseFolderName + ".zip")) {
             long fileSize = o.getObjectMetadata().getContentLength();
 
-            try (InputStream inputStream = o.getObjectContent();
-                    FileOutputStream fileOutputStream = new FileOutputStream(
-                            new File(localRepositoryDir, baseFolderName + ".zip"))) {
-                super.download("Download TotalCross SDK " + baseFolderName, inputStream, fileOutputStream, fileSize);
+            try (InputStream inputStream = o.getObjectContent()) {
+                super.download("Download TotalCross SDK " + baseFolderName, inputStream, fileSize);
             }
         } catch (AmazonServiceException e) {
             if (e instanceof AmazonS3Exception && ((AmazonS3Exception) e).getStatusCode() == 404) {

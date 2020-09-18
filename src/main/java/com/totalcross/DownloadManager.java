@@ -83,16 +83,17 @@ public abstract class DownloadManager {
       }
    }
 
-   protected void download(String taskName, InputStream input, FileOutputStream output, long inputSize)
-         throws IOException {
-      final ReadableByteChannel readableByteChannel = Channels.newChannel(input);
-      final FileChannel fileChannel = output.getChannel();
-      final ProgressBar pb = new ProgressBar(taskName, inputSize);
-      for (long ret = 0, written = 0; 
-            (ret = fileChannel.transferFrom(readableByteChannel, written, 8192)) != 0; 
-            written += ret) {
-         pb.stepBy(ret);
+   protected void download(String taskName, InputStream input, long inputSize) throws IOException {
+      try (final FileOutputStream output = new FileOutputStream(
+            new File(localRepositoryDir, baseFolderName + ".zip"))) {
+         final ReadableByteChannel readableByteChannel = Channels.newChannel(input);
+         final FileChannel fileChannel = output.getChannel();
+         final ProgressBar pb = new ProgressBar(taskName, inputSize);
+         for (long ret = 0, written = 0; (ret = fileChannel.transferFrom(readableByteChannel, written,
+               8192)) != 0; written += ret) {
+            pb.stepBy(ret);
+         }
+         pb.close();
       }
-      pb.close();
    }
 }
