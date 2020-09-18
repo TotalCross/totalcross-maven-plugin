@@ -152,9 +152,11 @@ public class TotalCrossMojo extends AbstractMojo {
             }
             totalcrossHome = totalCrossSDKDownloader.getPath();
         }
-        JavaJDKManager javaJDKManager = new JavaJDKManager();
-        javaJDKManager.init();
-        jdkPath = javaJDKManager.getPath();
+        if(jdkPath == null) {
+            JavaJDKManager javaJDKManager = new JavaJDKManager();
+            javaJDKManager.init();
+            jdkPath = javaJDKManager.getPath();
+        }
     }
 
     private String getJarsInsidePath(String path) {
