@@ -1,9 +1,7 @@
 package com.totalcross;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Paths;
 
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
@@ -14,7 +12,6 @@ import com.totalcross.exception.SDKVersionNotFoundException;
 
 public class TotalCrossSDKManager extends DownloadManager {
     private static final String BASE_BUCKET = "totalcross-release";
-    private boolean deleteDirIfSomethingGoesWrong;
 
     public TotalCrossSDKManager(String localRepositoryDir, String sdkVersion) {
         super(localRepositoryDir, sdkVersion);
@@ -25,17 +22,10 @@ public class TotalCrossSDKManager extends DownloadManager {
     }
 
     public void init() throws SDKVersionNotFoundException, IOException {
-        configureAndCreateDirs();
         if (!verify("etc")) {
             download();
             unzip();
         }
-    }
-
-    public void configureAndCreateDirs() {
-        setPath(Paths.get(localRepositoryDir, baseFolderName).toAbsolutePath().toString());
-        File dir = getPath();
-        deleteDirIfSomethingGoesWrong = !dir.exists(); // Should not delete if already exists
     }
 
     public void download() throws SDKVersionNotFoundException, IOException {
@@ -44,19 +34,11 @@ public class TotalCrossSDKManager extends DownloadManager {
                 baseFolderName.substring(0, 3) + "/TotalCross-" + baseFolderName + ".zip")) {
             long fileSize = o.getObjectMetadata().getContentLength();
 
-            File jdkDir = getPath();
-            if (!jdkDir.exists()) {
-                jdkDir.mkdirs();
-            }
-
             try (InputStream inputStream = o.getObjectContent()) {
                 super.download("Download TotalCross SDK " + baseFolderName, inputStream, fileSize);
             }
         } catch (AmazonS3Exception e) {
             if (e.getStatusCode() == 404) {
-                if (deleteDirIfSomethingGoesWrong) {
-                    getPath().delete();
-                }
                 throw new SDKVersionNotFoundException(baseFolderName);
             }
             throw e;

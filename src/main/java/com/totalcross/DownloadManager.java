@@ -70,21 +70,25 @@ public abstract class DownloadManager {
    }
 
    public void unzip() throws IOException {
-         ZipFile zipFile = new ZipFile(new File(localRepositoryDir, baseFolderName + ".zip"));
-         if (!zipFile.getFile().exists())
-            return;
-         zipFile.extractAll(localRepositoryDir);
-         List<FileHeader> filesOnZip = zipFile.getFileHeaders();
-         String firstFileOnZip = filesOnZip.get(0).getFileName();
-         if (filesOnZip.get(0).isDirectory()) {
-            firstFileOnZip = firstFileOnZip.substring(0, firstFileOnZip.length() - 1);
-         }
-         rename(firstFileOnZip, baseFolderName);
-         FileUtils.deleteDirectory(new File(localRepositoryDir, firstFileOnZip));
-         FileUtils.deleteDirectory(new File(localRepositoryDir, baseFolderName + ".zip"));
+      ZipFile zipFile = new ZipFile(new File(localRepositoryDir, baseFolderName + ".zip"));
+      if (!zipFile.getFile().exists())
+         return;
+      zipFile.extractAll(localRepositoryDir);
+      List<FileHeader> filesOnZip = zipFile.getFileHeaders();
+      String firstFileOnZip = filesOnZip.get(0).getFileName();
+      if (filesOnZip.get(0).isDirectory()) {
+         firstFileOnZip = firstFileOnZip.substring(0, firstFileOnZip.length() - 1);
+      }
+      rename(firstFileOnZip, baseFolderName);
+      FileUtils.deleteDirectory(new File(localRepositoryDir, firstFileOnZip));
+      FileUtils.deleteDirectory(new File(localRepositoryDir, baseFolderName + ".zip"));
    }
 
    protected void download(String taskName, InputStream input, long inputSize) throws IOException {
+      final File path = new File(localRepositoryDir);
+      if (!path.exists()) {
+         path.mkdirs();
+      }
       try (final FileOutputStream output = new FileOutputStream(
             new File(localRepositoryDir, baseFolderName + ".zip"))) {
          final ReadableByteChannel readableByteChannel = Channels.newChannel(input);
