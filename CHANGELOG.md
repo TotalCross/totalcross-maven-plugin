@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2020-09-18
+
+### Added
+- parameter <jdkPath>: by using this parameter, when packaging, it will use the path passed here as the jdk to build.
+    ```xml
+    	<configuration>
+            <jdkPath>path/to/jdk</jdkPath>
+        </configuration>
+    ```
+
+- Support for any Java version to use with TotalCross development, it's important to say we didn't add support to newer bytecode, this is just so the user can download any version of Java and use what we already support, this was done with embedding the latest [Zulu build of version 8](https://www.azul.com/downloads/zulu-community/?version=java-8-lts&architecture=x86-64-bit&package=jre) and using it when packaging.
 
 ## [1.2.0] - 2020-08-05
 ### Added
