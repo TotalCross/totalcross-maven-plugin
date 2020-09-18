@@ -19,20 +19,18 @@ import net.harawata.appdirs.AppDirsFactory;
 
 public class TotalCrossSDKManager extends DownloadManager {
 
-    private String version;
     private final String baseBucket = "totalcross-release";
     private boolean deleteDirIfSomethingGoesWrong;
 
     public TotalCrossSDKManager(String sdkVersion) {
         super(sdkVersion);
-        this.version = sdkVersion;
     }
 
     public void init() throws SDKVersionNotFoundException, IOException {
         configureAndCreateDirs();
         if (!verify()) {
             download();
-            unzip("temp.zip", version);
+            unzip("temp.zip", baseFolderName);
         }
     }
 
@@ -43,7 +41,7 @@ public class TotalCrossSDKManager extends DownloadManager {
     public void configureAndCreateDirs() {
         AppDirs appDirs = AppDirsFactory.getInstance();
         localRepositoryDir = appDirs.getUserDataDir("TotalCross", null, null);
-        setPath(Paths.get(localRepositoryDir, version).toAbsolutePath().toString());
+        setPath(Paths.get(localRepositoryDir, baseFolderName).toAbsolutePath().toString());
         File dir = new File(getPath());
         deleteDirIfSomethingGoesWrong = !dir.exists(); // Should not delete if already exists
         new File(getPath()).mkdirs();
@@ -51,20 +49,20 @@ public class TotalCrossSDKManager extends DownloadManager {
 
     public void download() throws SDKVersionNotFoundException, IOException {
         final AmazonS3 s3 = AmazonS3ClientBuilder.standard().withRegion(Regions.DEFAULT_REGION).build();
-        try (S3Object o = s3.getObject(baseBucket, version.substring(0, 3) + "/TotalCross-" + version + ".zip")) {
+        try (S3Object o = s3.getObject(baseBucket, baseFolderName.substring(0, 3) + "/TotalCross-" + baseFolderName + ".zip")) {
             long fileSize = o.getObjectMetadata().getContentLength();
 
             try (InputStream inputStream = o.getObjectContent();
                     FileOutputStream fileOutputStream = new FileOutputStream(
                             new File(localRepositoryDir, "temp.zip"))) {
-                super.download("Download TotalCross SDK " + version, inputStream, fileOutputStream, fileSize);
+                super.download("Download TotalCross SDK " + baseFolderName, inputStream, fileOutputStream, fileSize);
             }
         } catch (AmazonServiceException e) {
             if (e instanceof AmazonS3Exception && ((AmazonS3Exception) e).getStatusCode() == 404) {
                 if (deleteDirIfSomethingGoesWrong) {
                     new File(getPath()).delete();
                 }
-                throw new SDKVersionNotFoundException(version);
+                throw new SDKVersionNotFoundException(baseFolderName);
             }
             e.printStackTrace();
             System.exit(1);
