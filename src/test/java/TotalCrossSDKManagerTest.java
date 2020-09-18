@@ -44,10 +44,10 @@ class TotalCrossSDKManagerTest {
             e.printStackTrace();
         }
 
-        String sdkDir = totalCrossSDKDownloader.getPath();
+        File sdkDir = totalCrossSDKDownloader.getPath();
 
-        assertEquals(true, new File(sdkDir).exists(), "SDK 6.0.4 dir should exists");
-        assertEquals(true, new File(sdkDir).isDirectory(), "SDK 6.0.4 dir should be a directory");
+        assertEquals(true, sdkDir.exists(), "SDK 6.0.4 dir should exists");
+        assertEquals(true, sdkDir.isDirectory(), "SDK 6.0.4 dir should be a directory");
         assertEquals(true, new File(sdkDir + File.separator + "dist").exists(), "dist dir should be a exists");
         assertEquals(true, new File(sdkDir + File.separator + "docs").exists(), "docs dir should be a exists");
         assertEquals(true, new File(sdkDir + File.separator + "etc").exists(), "etc dir should be a exists");
@@ -69,9 +69,9 @@ class TotalCrossSDKManagerTest {
         totalCrossSDKDownloader = new TotalCrossSDKManager("nonExistingVersion");
         assertThrows(SDKVersionNotFoundException.class, () -> totalCrossSDKDownloader.init(),
                 "Should throws SDKVersionNotFoundException");
-        String sdkDir = totalCrossSDKDownloader.getPath();
+        File sdkDir = totalCrossSDKDownloader.getPath();
 
-        assertEquals(false, new File(sdkDir).exists(), "SDK nonExistingVersion dir should exists");
+        assertEquals(false, sdkDir.exists(), "SDK nonExistingVersion dir should exists");
 
     }
 

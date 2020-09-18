@@ -34,16 +34,16 @@ public class TotalCrossSDKManager extends DownloadManager {
     }
 
     public boolean verify() {
-        return new File(getPath() + File.separator + "etc").exists();
+        return new File(getPath(), "etc").exists();
     }
 
     public void configureAndCreateDirs() {
         AppDirs appDirs = AppDirsFactory.getInstance();
         localRepositoryDir = appDirs.getUserDataDir("TotalCross", null, null);
         setPath(Paths.get(localRepositoryDir, baseFolderName).toAbsolutePath().toString());
-        File dir = new File(getPath());
+        File dir = getPath();
         deleteDirIfSomethingGoesWrong = !dir.exists(); // Should not delete if already exists
-        new File(getPath()).mkdirs();
+        getPath().mkdirs();
     }
 
     public void download() throws SDKVersionNotFoundException, IOException {
@@ -60,7 +60,7 @@ public class TotalCrossSDKManager extends DownloadManager {
         } catch (AmazonServiceException e) {
             if (e instanceof AmazonS3Exception && ((AmazonS3Exception) e).getStatusCode() == 404) {
                 if (deleteDirIfSomethingGoesWrong) {
-                    new File(getPath()).delete();
+                    getPath().delete();
                 }
                 throw new SDKVersionNotFoundException(baseFolderName);
             }

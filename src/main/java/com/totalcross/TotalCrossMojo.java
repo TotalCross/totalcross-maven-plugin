@@ -150,12 +150,12 @@ public class TotalCrossMojo extends AbstractMojo {
             } catch (SDKVersionNotFoundException e) {
                 getLog().error(e);
             }
-            totalcrossHome = totalCrossSDKDownloader.getPath();
+            totalcrossHome = totalCrossSDKDownloader.getPath().getAbsolutePath();
         }
         if(jdkPath == null) {
             JavaJDKManager javaJDKManager = new JavaJDKManager();
             javaJDKManager.init();
-            jdkPath = javaJDKManager.getPath();
+            jdkPath = javaJDKManager.getPath().getAbsolutePath();
         }
     }
 

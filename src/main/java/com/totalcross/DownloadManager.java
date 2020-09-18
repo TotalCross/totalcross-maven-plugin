@@ -25,7 +25,7 @@ public abstract class DownloadManager {
 
    protected String localRepositoryDir;
 
-   private String path;
+   private File path;
    protected final String baseFolderName;
 
    DownloadManager(String baseFolderName) {
@@ -40,12 +40,12 @@ public abstract class DownloadManager {
       this.localRepositoryDir = localRepositoryDir;
    }
 
-   public String getPath() {
+   public File getPath() {
       return path;
    }
 
    protected void setPath(String path) {
-      this.path = path;
+      this.path = new File(path);
    }
 
    protected boolean verify(String subpath) {

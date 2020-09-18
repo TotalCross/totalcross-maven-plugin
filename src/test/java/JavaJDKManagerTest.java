@@ -42,10 +42,10 @@ public class JavaJDKManagerTest {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        String jdkDir = javaJDKManager.getPath();
+        File jdkDir = javaJDKManager.getPath();
 
-        assertEquals(true, new File(jdkDir).exists(), "JDK dir should exist");
-        assertEquals(true, new File(jdkDir).isDirectory(), "JDK dir should be a directory");
+        assertEquals(true, jdkDir.exists(), "JDK dir should exist");
+        assertEquals(true, jdkDir.isDirectory(), "JDK dir should be a directory");
         assertEquals(true, new File(jdkDir, "bin").exists(), "bin dir should be a exists");
         assertEquals(true, new File(jdkDir, "lib").exists(), "lib dir should be a exists");
         assertEquals(false, new File(jdkDir, "tempjdk.zip").exists(), "tempjdk.zip should have been deleted");
