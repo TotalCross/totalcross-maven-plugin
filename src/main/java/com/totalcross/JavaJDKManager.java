@@ -6,30 +6,23 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
-import net.harawata.appdirs.AppDirs;
-import net.harawata.appdirs.AppDirsFactory;
-
 public class JavaJDKManager extends DownloadManager {
     private static String jdkVersion = "8";
+
+    public JavaJDKManager(String localRepositoryDir) {
+        super(localRepositoryDir, "zulu_jdk_1-8");
+    }
 
     public JavaJDKManager() {
         super("zulu_jdk_1-8");
     }
 
     public void init() throws IOException {
-        configureAndCreateDirs();
         if (!verify()) {
             download();
             unzip();
         }
         setPath(new File(localRepositoryDir, baseFolderName).getAbsolutePath());
-    }
-
-    public void configureAndCreateDirs() {
-        AppDirs appDirs = AppDirsFactory.getInstance();
-        if (localRepositoryDir != null)
-            return;
-        localRepositoryDir = appDirs.getUserDataDir("TotalCross", null, null);
     }
 
     public void download() throws IOException {

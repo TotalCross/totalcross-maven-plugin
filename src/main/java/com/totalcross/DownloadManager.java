@@ -12,6 +12,7 @@ import java.util.List;
 import org.codehaus.plexus.util.FileUtils;
 
 import me.tongfei.progressbar.ProgressBar;
+import net.harawata.appdirs.AppDirsFactory;
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.model.FileHeader;
 
@@ -23,21 +24,23 @@ public abstract class DownloadManager {
    public static final String SYSTEM_OS = isWindows ? "windows" : isLinux ? "linux" : isMac ? "macos" : "undefined";
    public static final String SYSTEM_BITNESS = is64bits ? "64" : "32";
 
-   protected String localRepositoryDir;
+   protected final String localRepositoryDir;
 
    private File path;
    public final String baseFolderName;
 
    DownloadManager(String baseFolderName) {
+      this(AppDirsFactory.getInstance().getUserDataDir("TotalCross", null, null), baseFolderName);
+   }
+
+   DownloadManager(String localRepositoryDir, String baseFolderName) {
+      this.localRepositoryDir = localRepositoryDir;
       this.baseFolderName = baseFolderName;
+      setPath(new File(localRepositoryDir, baseFolderName).getAbsolutePath());
    }
 
    public String getLocalRepositoryDir() {
       return this.localRepositoryDir;
-   }
-
-   public void setLocalRepositoryDir(String localRepositoryDir) {
-      this.localRepositoryDir = localRepositoryDir;
    }
 
    public File getPath() {
@@ -49,7 +52,7 @@ public abstract class DownloadManager {
    }
 
    protected boolean verify(String subpath) {
-      return new File(localRepositoryDir, subpath).exists();
+      return new File(path, subpath).exists();
    }
 
    public boolean verify() {

@@ -12,12 +12,13 @@ import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.S3Object;
 import com.totalcross.exception.SDKVersionNotFoundException;
 
-import net.harawata.appdirs.AppDirs;
-import net.harawata.appdirs.AppDirsFactory;
-
 public class TotalCrossSDKManager extends DownloadManager {
     private static final String BASE_BUCKET = "totalcross-release";
     private boolean deleteDirIfSomethingGoesWrong;
+
+    public TotalCrossSDKManager(String localRepositoryDir, String sdkVersion) {
+        super(localRepositoryDir, sdkVersion);
+    }
 
     public TotalCrossSDKManager(String sdkVersion) {
         super(sdkVersion);
@@ -32,8 +33,6 @@ public class TotalCrossSDKManager extends DownloadManager {
     }
 
     public void configureAndCreateDirs() {
-        AppDirs appDirs = AppDirsFactory.getInstance();
-        localRepositoryDir = appDirs.getUserDataDir("TotalCross", null, null);
         setPath(Paths.get(localRepositoryDir, baseFolderName).toAbsolutePath().toString());
         File dir = getPath();
         deleteDirIfSomethingGoesWrong = !dir.exists(); // Should not delete if already exists

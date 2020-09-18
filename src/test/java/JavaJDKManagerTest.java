@@ -8,22 +8,16 @@ import com.totalcross.JavaJDKManager;
 
 import org.codehaus.plexus.util.FileUtils;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import net.harawata.appdirs.AppDirs;
 import net.harawata.appdirs.AppDirsFactory;
 
 public class JavaJDKManagerTest {
-    private static JavaJDKManager javaJDKManager = new JavaJDKManager();
     static AppDirs appDirs = AppDirsFactory.getInstance();
     private static String repoTestDir = Paths
             .get(appDirs.getUserDataDir("TotalCross", null, null), "TotalCrossTestRepo").toFile().getAbsolutePath();
-
-    @BeforeAll
-    static void setUpTest() {
-        javaJDKManager.setLocalRepositoryDir(repoTestDir);
-    }
+    private static JavaJDKManager javaJDKManager = new JavaJDKManager(repoTestDir);
 
     @AfterAll
     static void wipeTest() {

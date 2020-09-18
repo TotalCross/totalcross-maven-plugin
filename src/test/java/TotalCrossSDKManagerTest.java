@@ -9,18 +9,12 @@ import com.totalcross.exception.SDKVersionNotFoundException;
 
 import org.codehaus.plexus.util.FileUtils;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 class TotalCrossSDKManagerTest {
 
-    private static TotalCrossSDKManager totalCrossSDKDownloader = new TotalCrossSDKManager("6.0.4");
     private static String repoTestDir = System.getProperty("user.home") + File.separator + "TotalCrossTestRepo";
-
-    @BeforeAll
-    static void setUpTest() {
-        totalCrossSDKDownloader.setLocalRepositoryDir(repoTestDir);
-    }
+    private static TotalCrossSDKManager totalCrossSDKDownloader = new TotalCrossSDKManager(repoTestDir, "6.0.4");
 
     @AfterAll
     static void wipeTest() {
@@ -55,9 +49,8 @@ class TotalCrossSDKManagerTest {
         assertEquals(true, new File(sdkDir + File.separator + "license.txt").exists(),
                 "license.txt dir should be a exists");
 
-        assertEquals(false,
-                new File(totalCrossSDKDownloader.getLocalRepositoryDir(), totalCrossSDKDownloader.baseFolderName + ".zip").exists(),
-                "zip file should have been deleted");
+        assertEquals(false, new File(totalCrossSDKDownloader.getLocalRepositoryDir(),
+                totalCrossSDKDownloader.baseFolderName + ".zip").exists(), "zip file should have been deleted");
         assertEquals(false,
                 new File(totalCrossSDKDownloader.getLocalRepositoryDir() + File.separator + "TotalCross").exists(),
                 "TotalCross folder inside TotalCross local repo should have been deleted");
