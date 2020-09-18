@@ -26,7 +26,7 @@ public class TotalCrossSDKManager extends DownloadManager {
 
     public void init() throws SDKVersionNotFoundException, IOException {
         configureAndCreateDirs();
-        if (!verify()) {
+        if (!verify("etc")) {
             download();
             unzip();
         }
