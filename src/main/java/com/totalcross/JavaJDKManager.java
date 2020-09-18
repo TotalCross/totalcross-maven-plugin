@@ -6,7 +6,7 @@ import java.net.URL;
 import java.net.URLConnection;
 
 public class JavaJDKManager extends DownloadManager {
-    private static String jdkVersion = "8";
+    private static final String JDK_VERSION = "8";
 
     public JavaJDKManager(String localRepositoryDir) {
         super(localRepositoryDir, "zulu_jdk_1-8");
@@ -25,11 +25,11 @@ public class JavaJDKManager extends DownloadManager {
 
     public void download() throws IOException {
         URLConnection connection = new URL(
-                "https://api.azul.com/zulu/download/community/v1.0/bundles/latest/binary/?jdk_version=" + jdkVersion
+                "https://api.azul.com/zulu/download/community/v1.0/bundles/latest/binary/?jdk_version=" + JDK_VERSION
                         + "&ext=zip&os=" + SYSTEM_OS + "&arch=x86&hw_bitness=" + SYSTEM_BITNESS).openConnection();
         long fileSize = connection.getContentLength();
         try (InputStream inputStream = connection.getInputStream()) {
-            super.download("Download JDK " + jdkVersion, inputStream, fileSize);
+            super.download("Download JDK " + JDK_VERSION, inputStream, fileSize);
         }
     }
 
