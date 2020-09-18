@@ -71,7 +71,7 @@ public abstract class DownloadManager {
 
    public void unzip() {
       try {
-         ZipFile zipFile = new ZipFile(new File(localRepositoryDir, baseFolderName));
+         ZipFile zipFile = new ZipFile(new File(localRepositoryDir, baseFolderName + ".zip"));
          if (!zipFile.getFile().exists())
             return;
          zipFile.extractAll(localRepositoryDir);
@@ -80,9 +80,9 @@ public abstract class DownloadManager {
          if (filesOnZip.get(0).isDirectory()) {
             firstFileOnZip = firstFileOnZip.substring(0, firstFileOnZip.length() - 1);
          }
-         rename(firstFileOnZip, baseFolderName + ".zip");
+         rename(firstFileOnZip, baseFolderName);
          FileUtils.deleteDirectory(new File(localRepositoryDir, firstFileOnZip));
-         FileUtils.deleteDirectory(new File(localRepositoryDir, baseFolderName));
+         FileUtils.deleteDirectory(new File(localRepositoryDir, baseFolderName + ".zip"));
 
       } catch (Exception e) {
          e.printStackTrace();
