@@ -36,7 +36,6 @@ public class TotalCrossSDKManager extends DownloadManager {
         setPath(Paths.get(localRepositoryDir, baseFolderName).toAbsolutePath().toString());
         File dir = getPath();
         deleteDirIfSomethingGoesWrong = !dir.exists(); // Should not delete if already exists
-        getPath().mkdirs();
     }
 
     public void download() throws SDKVersionNotFoundException, IOException {
@@ -44,6 +43,11 @@ public class TotalCrossSDKManager extends DownloadManager {
         try (S3Object o = s3.getObject(BASE_BUCKET,
                 baseFolderName.substring(0, 3) + "/TotalCross-" + baseFolderName + ".zip")) {
             long fileSize = o.getObjectMetadata().getContentLength();
+
+            File jdkDir = getPath();
+            if (!jdkDir.exists()) {
+                jdkDir.mkdirs();
+            }
 
             try (InputStream inputStream = o.getObjectContent()) {
                 super.download("Download TotalCross SDK " + baseFolderName, inputStream, fileSize);
