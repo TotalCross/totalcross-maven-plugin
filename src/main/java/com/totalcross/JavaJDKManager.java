@@ -36,6 +36,11 @@ public class JavaJDKManager extends DownloadManager {
     @Override
     protected void setPath(String path) {
         if (isMac) {
+            /* 
+                java unzip doesn't support symbolic links, 
+                but it's easy enough for us to just append 
+                the Contents/Home whatever 
+            */
             path += "/zulu-8.jre/Contents/Home";
         }
         super.setPath(path);
