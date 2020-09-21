@@ -86,15 +86,11 @@ public class TotalCrossMojo extends AbstractMojo {
 
     private ArrayList<Element> args;
 
-    private String sdkVersion;
-
     private String projectClassPath = "";
 
     String classPathSeparator = System.getProperty("os.name").startsWith("Windows") ? ";" : ":";
 
     Artifact totalcrossArtifact;
-
-    private ArrayList<String> totalcrossLibs = new ArrayList<String>();
 
     private TCZUtils tczUtils;
 
@@ -152,7 +148,7 @@ public class TotalCrossMojo extends AbstractMojo {
             }
             totalcrossHome = totalCrossSDKDownloader.getPath().getAbsolutePath();
         }
-        if(jdkPath == null) {
+        if (jdkPath == null) {
             JavaJDKManager javaJDKManager = new JavaJDKManager();
             javaJDKManager.init();
             jdkPath = javaJDKManager.getPath().getAbsolutePath();
@@ -180,7 +176,6 @@ public class TotalCrossMojo extends AbstractMojo {
         args.add(element("argument", "-cp")); // exec -classpath argument
         Artifact totalcrossArtifact = mavenProject.getArtifactMap()
                 .get(ArtifactUtils.versionlessKey("com.totalcross", "totalcross-sdk"));
-        sdkVersion = totalcrossArtifact.getVersion();
 
         String requiredClassPath = null;
         if (totalcrossArtifact.getScope().equals("system")) {
