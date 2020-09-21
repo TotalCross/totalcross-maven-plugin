@@ -18,8 +18,6 @@ import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.model.enums.CompressionLevel;
 import net.lingala.zip4j.model.enums.CompressionMethod;
 
-
-
 public class TCZUtils {
 
     MavenProject mavenProject;
@@ -30,24 +28,23 @@ public class TCZUtils {
     /**
      * additional files to be added to the new all.pkg created at the target folder
      */
-    private String [] additionalFilePaths;
+    private String[] additionalFilePaths;
 
-    TCZUtils (MavenProject mavenProject) {
+    TCZUtils(MavenProject mavenProject) {
         this.mavenProject = mavenProject;
         this.outputDirectory = mavenProject.getBuild().getDirectory();
         this.totalcrossLibs = new ArrayList<String>();
         this.pathToFinalJar = Paths.get(outputDirectory, mavenProject.getBuild().getFinalName() + ".jar")
-            .toAbsolutePath().toString();
+                .toAbsolutePath().toString();
     }
-    
+
     /**
-     * If the artifact is a totalcross library, it will extract the library tcz
-     * with name 'artifactId'Lib.tcz to output directory inside totalcross-lib
-     * folder. 
+     * If the artifact is a totalcross library, it will extract the library tcz with
+     * name 'artifactId'Lib.tcz to output directory inside totalcross-lib folder.
      * 
      * @param artifact
      * @return It returns true, if this library is a totalcross library, otherwise
-     * returns false. 
+     *         returns false.
      */
     public boolean extractTCZsFromArtifactDependency(Artifact artifact) {
         String path = artifact.getFile().getAbsolutePath();
@@ -61,7 +58,7 @@ public class TCZUtils {
             String libDir = Paths.get(outputDirectory, "totalcross-libs").toAbsolutePath().toString();
             File libDirFile = new File(libDir);
             libDirFile.mkdirs();
-            
+
             if (fileHeader != null) {
                 zipFile.extractFile(tczFileName, libDir);
                 String tczPath = Paths.get(libDir, tczFileName).toAbsolutePath().toString();
@@ -77,6 +74,7 @@ public class TCZUtils {
     /**
      * Create a all.pkg inside outputdirectory with the paths to all files inside
      * totalcross-libs at build directory.
+     * 
      * @return true if it included at least one library.
      */
     public boolean includeTCZLibsOnAllPKG() {
@@ -93,12 +91,12 @@ public class TCZUtils {
             }
             File allPKG = new File(allPKGPath);
             FileOutputStream fos = new FileOutputStream(allPKG, true);
-	        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
+            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
             for (String tczPath : totalcrossLibs) {
                 bw.write("[L]" + tczPath);
                 bw.newLine();
             }
-            if(additionalFilePaths != null) {
+            if (additionalFilePaths != null) {
                 for (String filePath : additionalFilePaths) {
                     bw.write("[L]" + filePath);
                     bw.newLine();
@@ -106,7 +104,7 @@ public class TCZUtils {
             }
             bw.close();
             fos.close();
-            
+
         } catch (IOException e) {
             e.printStackTrace();
 
@@ -115,15 +113,16 @@ public class TCZUtils {
     }
 
     /**
-     * TotalCross tcz files are only loaded by the vm as totalcross libraries
-     * when it ends with Lib.tcz, i.e, KnowCodeXMLLib.tcz. This function adds
-     * a Lib, to the end of the word if it doesn't ends with Lib already.
-     * Used to find tcz inside a jar and to create libraries. 
+     * TotalCross tcz files are only loaded by the vm as totalcross libraries when
+     * it ends with Lib.tcz, i.e, KnowCodeXMLLib.tcz. This function adds a Lib, to
+     * the end of the word if it doesn't ends with Lib already. Used to find tcz
+     * inside a jar and to create libraries.
+     * 
      * @param libName
      * @return
      */
-    static String verifyAndFixLibName (String libName) {
-        if(!libName.substring(libName.length() - 3).equals("Lib")) {
+    static String verifyAndFixLibName(String libName) {
+        if (!libName.substring(libName.length() - 3).equals("Lib")) {
             return libName + "Lib";
         }
         return libName;
@@ -131,6 +130,7 @@ public class TCZUtils {
 
     /**
      * Add a file to the final build jar
+     * 
      * @param path
      */
     public void addFileToJar(String path) {
@@ -139,6 +139,7 @@ public class TCZUtils {
 
     /**
      * Add a file to a zip file.
+     * 
      * @param path
      * @param zipPath
      */
