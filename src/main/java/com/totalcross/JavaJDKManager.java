@@ -6,14 +6,14 @@ import java.net.URL;
 import java.net.URLConnection;
 
 public class JavaJDKManager extends DownloadManager {
-    private static final String JDK_VERSION = "8";
+    private static final String JDK_VERSION = "11";
 
     public JavaJDKManager(String localRepositoryDir) {
-        super(localRepositoryDir, "zulu_jdk_1-8");
+        super(localRepositoryDir, "zulu_jdk_11");
     }
 
     public JavaJDKManager() {
-        super("zulu_jdk_1-8");
+        super("zulu_jdk_11");
     }
 
     public void init() throws IOException {
@@ -41,7 +41,7 @@ public class JavaJDKManager extends DownloadManager {
                 but it's easy enough for us to just append 
                 the Contents/Home whatever 
             */
-            path += "/zulu-8.jre/Contents/Home";
+            path += "/zulu-11.jre/Contents/Home";
         }
         super.setPath(path);
     }
