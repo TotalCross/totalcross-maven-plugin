@@ -41,7 +41,7 @@ public class JavaJDKManager extends DownloadManager {
                 but it's easy enough for us to just append 
                 the Contents/Home whatever 
             */
-            path += "/zulu-11.jre/Contents/Home";
+            path += "/zulu-11.jdk/Contents/Home";
         }
         super.setPath(path);
     }
