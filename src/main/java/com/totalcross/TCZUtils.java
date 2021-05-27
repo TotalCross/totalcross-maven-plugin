@@ -122,7 +122,7 @@ public class TCZUtils {
      * @return
      */
     static String verifyAndFixLibName(String libName) {
-        if (!libName.substring(libName.length() - 3).equals("Lib")) {
+        if (libName.length() < 3 || !libName.endsWith("Lib")) {
             return libName + "Lib";
         }
         return libName;
