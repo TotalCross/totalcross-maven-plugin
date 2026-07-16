@@ -1,3 +1,10 @@
+> [!IMPORTANT]
+> This project has moved to the
+> [`TotalCross/totalcross-tooling`](https://github.com/TotalCross/totalcross-tooling)
+> repository under [`maven-plugin/`](https://github.com/TotalCross/totalcross-tooling/tree/main/maven-plugin).
+> Development continues there. This repository is retained for historical
+> issues, pull requests, releases, and links and is intended to be archived.
+
 # TotalCross Maven Plugin
 This is the totalcross maven plugin. It helps building TotalCross applications without download or instaall anything else. You just need to have totalcross-sdk java api set in your dependencies and this plugin takes care of downloading the right TotalCross SDK.
 
